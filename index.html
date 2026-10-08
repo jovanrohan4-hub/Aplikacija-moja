@@ -87,6 +87,8 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
 .status.saved i{background:var(--green)}
 .status.saving i{background:var(--yellow)}
 .status.error i{background:var(--pink)}
+.status.offline i{background:var(--orange)}
+.status.syncerr i{background:var(--orange)}
 .icon-btn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--muted);background:var(--surface);border:1px solid var(--line)}
 .icon-btn.sm{width:30px;height:30px;border-radius:9px;background:none;border:0}
 .icon-btn:hover{color:var(--ink);background:var(--surface2)}
@@ -304,6 +306,7 @@ textarea{resize:vertical;min-height:90px;line-height:1.5}
 <div id="sheet"></div>
 <div id="toast"></div>
 
+<script src="firebase-config.js"></script>
 <script>
 (function(){
 'use strict';
@@ -411,6 +414,7 @@ function fromDocs(map){
   return norm(o);
 }
 async function flush(){
+  if(FB.on)return fbFlush();
   if(!db){saveState='local';renderStatus();return;}
   if(saving){pending=true;return;}
   saving=true;saveState='saving';renderStatus();
@@ -436,16 +440,254 @@ function queueSave(){
   dirty=true;lsSave();
   clearTimeout(saveTimer);
   saveTimer=setTimeout(flush,600);
-  if(db){saveState='saving';renderStatus();}
+  if(db||(FB.on&&fbSynced)){saveState=(FB.on&&!navigator.onLine)?'offline':'saving';renderStatus();}
 }
 function renderStatus(){
   const el=$('#status');if(!el)return;
-  const t={saved:'Sačuvano',saving:'Čuvam…',local:'Samo na ovom uređaju',error:'Greška pri čuvanju'}[saveState];
+  const t=(saveState==='saved'&&FB.on&&FB.user)?'Sinhronizovano':{saved:'Sačuvano',saving:'Čuvam…',local:'Samo na ovom uređaju',error:'Greška pri čuvanju',offline:'Nema interneta',signedout:'Nisi prijavljen',connecting:'Povezujem se…',syncerr:'Sinhronizacija nije dostupna'}[saveState];
   el.className='status '+saveState;
   el.innerHTML='<i></i>'+t;
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveTimer){clearTimeout(saveTimer);saveTimer=null;flush();}});
 function hasContent(){return S.tasks.length||S.blocks.length||S.subjects.length||S.plans.length||S.sessions.length||S.habits.length||S.goals.length||S.body.length||S.tx.length||Object.keys(S.journal).length;}
+
+/* ---------- Firebase sync ---------- */
+const FBC=window.FIREBASE_CONFIG||null;
+const FBV='10.14.1';
+const SYNC_KEY='moj-zivot-sync-v1';
+const FB={on:!!(FBC&&FBC.apiKey&&FBC.projectId),adapter:null,user:null,uid:null,unsub:null,err:null,loading:false,applyVer:0,pushSeq:0,latest:null,latestSeq:0,defT:null,retryT:null};
+let syncBase={},fbSeen={},fbSynced=false,fbSaving=false,fbPending=false;
+const FB_TO=window.__FB_TIMEOUT__||12000;
+const withTO=p=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(Object.assign(new Error('timeout'),{code:'timeout'})),FB_TO))]);
+
+const canon=v=>Array.isArray(v)?'['+v.map(canon).join(',')+']':(v&&typeof v==='object')?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}':JSON.stringify(v);
+function hh(d){
+  const s=canon(d);let h1=0xdeadbeef,h2=0x41c6ce57;
+  for(let i=0;i<s.length;i++){const ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);
+}
+function mergeVal(a,b){
+  if(Array.isArray(a)&&Array.isArray(b)){
+    const objs=a.concat(b).some(x=>x&&typeof x==='object');
+    if(!objs)return Array.from(new Set(a.concat(b)));
+    const seen=new Set(),out=[];
+    a.concat(b).forEach(x=>{if(x&&x.id!==undefined){if(seen.has(x.id))return;seen.add(x.id);}out.push(x);});
+    return out;
+  }
+  if(a&&b&&typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)&&!Array.isArray(b)){
+    const o={};
+    new Set(Object.keys(a).concat(Object.keys(b))).forEach(k=>{o[k]=(k in a&&k in b)?mergeVal(a[k],b[k]):(k in a?a[k]:b[k]);});
+    return o;
+  }
+  return a!==undefined?a:b;
+}
+function mergeDoc(id,a,b){
+  const m=mergeVal(a,b);
+  if(id==='core')m.draft=a.draft||b.draft||null;
+  return clean(m);
+}
+function remapCats(L,cloud){
+  const lc=L.core&&L.core.budget&&L.core.budget.cats,cc=cloud.core&&cloud.core.budget&&cloud.core.budget.cats;
+  if(!lc||!cc)return;
+  const byName={};cc.forEach(c=>{byName[(c.name||'').toLowerCase()]=c.id;});
+  const map={};
+  L.core.budget.cats=lc.filter(c=>{const k=(c.name||'').toLowerCase();if(byName[k]!==undefined&&byName[k]!==c.id){map[c.id]=byName[k];return false;}return true;});
+  Object.keys(L).forEach(id=>{if(id.indexOf('log-')===0&&L[id].tx)L[id].tx.forEach(x=>{if(map[x.cat])x.cat=map[x.cat];});});
+}
+function saveSync(){try{localStorage.setItem(SYNC_KEY,JSON.stringify({uid:FB.uid,base:syncBase}));}catch(e){}}
+function uiBusy(){
+  if(typeof sheet!=='undefined'&&sheet)return true;
+  const a=document.activeElement;
+  return !!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+}
+
+async function makeAdapter(){
+  const b='https://www.gstatic.com/firebasejs/'+FBV+'/';
+  const r=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
+  const M=r[0],AU=r[1],FS=r[2];
+  const app=M.initializeApp(FBC),auth=AU.getAuth(app),fdb=FS.getFirestore(app);
+  const prov=new AU.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
+  const col=uid=>FS.collection(fdb,'users',uid,'docs');
+  return {
+    onAuth:cb=>AU.onAuthStateChanged(auth,u=>cb(u?{uid:u.uid,email:u.email||''}:null)),
+    signIn:()=>AU.signInWithPopup(auth,prov).catch(e=>{
+      if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))return AU.signInWithRedirect(auth,prov);
+      throw e;}),
+    signOut:()=>AU.signOut(auth),
+    listen:(uid,cb,eb)=>FS.onSnapshot(col(uid),{includeMetadataChanges:true},snap=>{const m={};snap.forEach(d=>{m[d.id]=d.data();});cb(m,snap.metadata.fromCache);},eb),
+    set:(uid,id,data,expected)=>FS.runTransaction(fdb,async tx=>{
+      const r=FS.doc(fdb,'users',uid,'docs',id),snap=await tx.get(r);
+      const cur=snap.exists()?snap.data():undefined;
+      if((cur===undefined?undefined:hh(cur))!==expected)throw Object.assign(new Error('conflict'),{code:'conflict'});
+      tx.set(r,data);
+    }),
+    del:(uid,id,expected)=>FS.runTransaction(fdb,async tx=>{
+      const r=FS.doc(fdb,'users',uid,'docs',id),snap=await tx.get(r);
+      if(snap.exists()&&hh(snap.data())!==expected)throw Object.assign(new Error('conflict'),{code:'conflict'});
+      tx.delete(r);
+    })
+  };
+}
+
+async function fbBoot(){
+  if(FB.loading||FB.adapter)return;
+  FB.loading=true;saveState='connecting';renderStatus();
+  try{
+    FB.adapter=window.__FB_ADAPTER__||await makeAdapter();
+    FB.adapter.onAuth(onAuthUser);
+  }catch(e){
+    FB.err=e;FB.adapter=null;
+    saveState=navigator.onLine?'syncerr':'offline';renderStatus();
+    if(navigator.onLine)toast('Sinhronizacija trenutno nije dostupna');
+  }
+  FB.loading=false;
+}
+function stopListen(){
+  if(FB.unsub){try{FB.unsub();}catch(e){}FB.unsub=null;}
+  fbSynced=false;clearTimeout(FB.defT);clearTimeout(FB.retryT);FB.latest=null;
+}
+function onAuthUser(u){
+  if(u&&FB.user&&FB.user.uid===u.uid)return;
+  stopListen();
+  FB.user=u;
+  if(!u){saveState='signedout';render();return;}
+  FB.uid=u.uid;
+  let rec=null;try{rec=JSON.parse(localStorage.getItem(SYNC_KEY)||'null');}catch(e){}
+  if(rec&&rec.uid&&rec.uid!==u.uid){
+    try{localStorage.setItem('moj-zivot-backup-'+Date.now(),JSON.stringify(S));}catch(e){}
+    S=blank();lsSave();syncBase={};FB.applyVer++;
+    toast('Ovaj uređaj je bio vezan za drugi nalog. Njegovi podaci su ostali samo lokalno.');
+  }else syncBase=(rec&&rec.base)||{};
+  saveSync();
+  saveState='saving';render();
+  FB.unsub=FB.adapter.listen(u.uid,onCloud,onCloudErr);
+}
+function onCloudErr(e){
+  FB.err=e;saveState=(e&&e.code==='unavailable')||!navigator.onLine?'offline':'error';renderStatus();
+  if(e&&e.code==='permission-denied')toast('Baza odbija pristup. Proveri pravila (Rules) u Firebase-u.');
+}
+function onCloud(map,fromCache){
+  if(fromCache)return;
+  FB.latest=map;FB.latestSeq=FB.pushSeq;
+  if(uiBusy()){scheduleDeferred();return;}
+  FB.latest=null;
+  applyCloud(map);
+}
+function scheduleDeferred(){
+  clearTimeout(FB.defT);
+  FB.defT=setTimeout(()=>{
+    if(!FB.latest)return;
+    if(uiBusy()){scheduleDeferred();return;}
+    const m=FB.latest,seq=FB.latestSeq;FB.latest=null;
+    if(seq!==FB.pushSeq)return;
+    applyCloud(m);
+  },1200);
+}
+function applyCloud(cloud){
+  const L=toDocs(),hc={},hl={};
+  Object.keys(cloud).forEach(id=>{hc[id]=hh(cloud[id]);});
+  Object.keys(L).forEach(id=>{hl[id]=hh(L[id]);});
+  fbSeen=Object.assign({},hc);
+  const first=!Object.keys(syncBase).length;
+  const ids=Array.from(new Set(Object.keys(cloud).concat(Object.keys(L),Object.keys(syncBase))));
+  let out=Object.assign({},L),changed=false;
+  if(first){
+    if(Object.keys(cloud).length){
+      if(!hasContent()){out=Object.assign({},cloud);changed=true;}
+      else{
+        remapCats(L,cloud);
+        ids.forEach(id=>{if(cloud[id]&&L[id])out[id]=mergeDoc(id,L[id],cloud[id]);else if(cloud[id])out[id]=cloud[id];});
+        changed=true;
+      }
+    }
+  }else{
+    for(const id of ids){
+      const l=hl[id],c=hc[id],b=syncBase[id];
+      if(l===c)continue;
+      if(b!==undefined&&l===b){if(c===undefined)delete out[id];else out[id]=cloud[id];changed=true;}
+      else if(b!==undefined&&c===b){/* lokalna izmena, ide u oblak */}
+      else if(b===undefined&&l===undefined){out[id]=cloud[id];changed=true;}
+      else if(b===undefined&&c===undefined){/* novo lokalno, ide u oblak */}
+      else if(c===undefined){/* obrisano u oblaku, a lokalno izmenjeno: zadrži lokalno */}
+      else if(l===undefined){out[id]=cloud[id];changed=true;}
+      else{out[id]=mergeDoc(id,L[id],cloud[id]);changed=true;}
+    }
+  }
+  if(changed){S=fromDocs(out);FB.applyVer++;lsSave();applyTheme();}
+  const L2=toDocs();
+  ids.forEach(id=>{
+    const h=L2[id]?hh(L2[id]):undefined;
+    if(h!==undefined&&h===hc[id])syncBase[id]=h;
+    else if(h===undefined&&hc[id]===undefined)delete syncBase[id];
+  });
+  saveSync();
+  const needPush=ids.some(id=>(L2[id]?hh(L2[id]):undefined)!==hc[id]);
+  const wasSynced=fbSynced;
+  fbSynced=true;
+  if(needPush)fbFlush();
+  else{saveState='saved';FB.err=null;}
+  if(changed){render();if(!wasSynced)toast('Podaci su sinhronizovani');}else renderStatus();
+}
+async function fbFlush(){
+  if(!FB.user||!fbSynced)return;
+  if(fbSaving){fbPending=true;return;}
+  if(!navigator.onLine){saveState='offline';renderStatus();return;}
+  fbSaving=true;saveState='saving';renderStatus();
+  const uid=FB.user.uid;
+  try{
+    do{
+      fbPending=false;
+      const ver=FB.applyVer,docs=toDocs();
+      for(const id of Object.keys(docs)){
+        if(FB.applyVer!==ver){fbPending=true;break;}
+        const hv=hh(docs[id]);
+        if(syncBase[id]===hv)continue;
+        await withTO(FB.adapter.set(uid,id,docs[id],fbSeen[id],hh));
+        syncBase[id]=hv;fbSeen[id]=hv;FB.pushSeq++;
+      }
+      if(!fbPending){
+        for(const id of Object.keys(syncBase)){
+          if(FB.applyVer!==ver){fbPending=true;break;}
+          if(!docs[id]){
+            await withTO(FB.adapter.del(uid,id,fbSeen[id],hh));
+            delete syncBase[id];delete fbSeen[id];FB.pushSeq++;
+          }
+        }
+      }
+      saveSync();
+    }while(fbPending);
+    saveState='saved';FB.err=null;
+  }catch(e){
+    if(e&&e.code==='conflict'){
+      clearTimeout(FB.retryT);FB.retryT=setTimeout(fbFlush,1500);
+      fbSaving=false;saveState='saving';renderStatus();return;
+    }
+    FB.err=e;
+    const off=!navigator.onLine||e.code==='timeout'||e.code==='unavailable';
+    saveState=off?'offline':'error';
+    clearTimeout(FB.retryT);FB.retryT=setTimeout(fbFlush,off?15000:60000);
+    if(e&&e.code==='permission-denied')toast('Baza odbija pristup. Proveri pravila (Rules) u Firebase-u.');
+    console.error(e);
+  }
+  fbSaving=false;renderStatus();
+}
+window.addEventListener('online',()=>{if(!FB.on)return;if(!FB.adapter)fbBoot();else if(fbSynced)fbFlush();else renderStatus();});
+window.addEventListener('offline',()=>{if(!FB.on||!FB.user)return;saveState='offline';renderStatus();});
+function syncBanner(){
+  if(!FB.on||FB.user||!FB.adapter)return '';
+  return '<div class="card c-pink" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px"><div><b>Sinhronizacija je isključena</b><div class="muted">Prijavi se da isti podaci budu na telefonu i računaru.</div></div><button class="btn primary sm" data-a="syncIn">Prijavi se</button></div>';
+}
+function syncHtml(){
+  if(!FB.on)return '';
+  let h='<div class="sub-h">Sinhronizacija</div>';
+  if(FB.user)h+='<p style="margin:0 0 8px">Prijavljen: <b>'+esc(FB.user.email||'nalog')+'</b>. Podaci se čuvaju u oblaku i usklađuju sa drugim uređajima.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" data-a="syncNow">Sinhronizuj sada</button><button class="btn sm" data-a="syncOut">Odjavi se</button></div>';
+  else if(FB.adapter)h+='<p class="muted" style="margin:0 0 8px">Prijavi se da se podaci čuvaju u oblaku i da isti budu na telefonu i računaru.</p><div style="margin-bottom:12px"><button class="btn primary sm" data-a="syncIn">Prijavi se Google nalogom</button></div>';
+  else h+='<p class="muted" style="margin:0 0 12px">Sinhronizacija se učitava ili trenutno nije dostupna.</p>';
+  if(FB.err)h+='<p class="muted" style="font-size:12px;margin:0 0 12px">Poslednja greška: '+esc(FB.err.code||FB.err.message||String(FB.err))+'</p>';
+  return h;
+}
 function applyTheme(){
   const t=S.settings.theme;
   if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);
@@ -590,6 +832,7 @@ VIEWS.danas=()=>{
   let o=head('Danas');
   o+='<section class="hero"><div><div class="hero-day">'+d.getDate()+'</div><div class="hero-meta">'+DAYS[dow(t)]+'<span>'+MONTHS[d.getMonth()]+' '+d.getFullYear()+'.</span></div><p class="hero-hi">'+greet+nm+'. '+msg+'</p></div>'+
     '<div class="ring" role="img" aria-label="Dnevni napredak '+pct+' posto"><svg viewBox="0 0 100 100"><circle class="tr" cx="50" cy="50" r="44"/><circle class="pr" cx="50" cy="50" r="44" stroke-dasharray="'+(pct/100*C).toFixed(1)+' '+C.toFixed(1)+'"/></svg><div class="ring-c">'+(total?pct+'%':'–')+'<small>'+(total?done+' od '+total:'nema stavki')+'</small></div></div></section>';
+  o+=syncBanner();
   o+='<div class="tiles">'+
     '<div class="tile c-yellow"><div class="k">Nivo</div><div class="v">'+st.level+' <small>'+esc(st.title)+'</small></div>'+bar(st.into/st.per*100)+'<div class="s" style="margin-top:5px">'+st.into+' / '+st.per+' XP</div></div>'+
     '<div class="tile c-pink"><div class="k">Niz</div><div class="v">'+st.streak+' <small>'+(st.streak===1?'dan':'dana')+'</small></div><div class="s">uzastopnih aktivnih dana</div></div>'+
@@ -1139,6 +1382,30 @@ A.editHabit=el=>{
     onDelete:()=>askConfirm('Obrisati naviku "'+h.name+'"?','Obriši',()=>{S.habits=S.habits.filter(x=>x.id!==h.id);commit();},'green')});
 };
 
+/* sinhronizacija */
+const FB_ERRS={
+  'auth/unauthorized-domain':'Ovaj sajt nije dodat u Authorized domains u Firebase-u.',
+  'auth/invalid-api-key':'Firebase ključ nije ispravan. Proveri firebase-config.js.',
+  'auth/api-key-not-valid.-please-pass-a-valid-api-key.':'Firebase ključ nije ispravan. Proveri firebase-config.js.',
+  'auth/operation-not-allowed':'Google prijava nije uključena u Firebase-u.',
+  'auth/network-request-failed':'Nema interneta.'
+};
+A.syncIn=()=>{
+  if(!FB.adapter){toast('Sinhronizacija se još učitava. Probaj za par sekundi.');return;}
+  const pr=FB.adapter.signIn();
+  closeSheet();
+  Promise.resolve(pr).catch(e=>{
+    const c=e&&e.code;
+    if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
+    FB.err=e;toast(FB_ERRS[c]||('Prijava nije uspela'+(c?': '+c:'')));
+  });
+};
+A.syncOut=()=>{
+  closeSheet();
+  Promise.resolve(FB.adapter&&FB.adapter.signOut()).then(()=>toast('Odjavljen. Podaci ostaju na ovom uređaju.'));
+};
+A.syncNow=()=>{closeSheet();if(!FB.user)return;if(!navigator.onLine){toast('Nema interneta');return;}toast('Sinhronizujem…');FB.latest=null;fbFlush();};
+
 /* settings, backup, demo */
 A.settings=()=>{
   openSheet({title:'Podešavanja',color:'pink',focus:false,
@@ -1146,7 +1413,7 @@ A.settings=()=>{
       {name:'currency',label:'Oznaka valute',value:S.settings.currency},
       {name:'gym',label:'Cilj: treninga nedeljno',type:'select',value:S.settings.gym,options:[1,2,3,4,5,6,7].map(n=>[n,String(n)])},
       {name:'theme',label:'Tema',type:'select',value:S.settings.theme,options:[['auto','Prema uređaju'],['light','Svetla'],['dark','Tamna']]}],
-    html:'<div class="sub-h">Podaci</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" data-a="exportData">Sačuvaj kopiju</button><button class="btn sm" data-a="importSheet">Uvezi kopiju</button><button class="btn sm" data-a="demo">Učitaj primer</button><button class="btn sm danger" data-a="resetAll">Obriši sve</button></div>',
+    html:syncHtml()+'<div class="sub-h">Podaci</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" data-a="exportData">Sačuvaj kopiju</button><button class="btn sm" data-a="importSheet">Uvezi kopiju</button><button class="btn sm" data-a="demo">Učitaj primer</button><button class="btn sm danger" data-a="resetAll">Obriši sve</button></div>',
     onSave:v=>{S.settings.name=v.name.trim();S.settings.gym=Number(v.gym);S.settings.theme=v.theme;S.settings.currency=(v.currency||'').trim().slice(0,6)||'RSD';applyTheme();commit();}});
 };
 A.exportData=async()=>{
@@ -1256,6 +1523,7 @@ document.addEventListener('change',e=>{
   if(cached)S=norm(cached);
   applyTheme();
   render();
+  if(FB.on){fbBoot();return;}
   const getClaude=()=>new Promise(res=>{let n=0;const iv=setInterval(()=>{if(window.claude&&window.claude.use){clearInterval(iv);res(window.claude);}else if(++n>40){clearInterval(iv);res(null);}},100);});
   (async()=>{
     const c=await getClaude();
