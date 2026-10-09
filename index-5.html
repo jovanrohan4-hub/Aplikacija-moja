@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E8246F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Moj život">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Moj život</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F2EFFF; --surface:#FFFFFF; --surface2:#F6F3FF; --ink:#1D1B3F; --muted:#6A6690;
+  --line:#E4DFFA; --line2:#CBC4F0;
+  --pink:#E8246F; --blue:#3B5BFF; --violet:#8B3DFF; --orange:#D94A06; --green:#078A62; --yellow:#FFC21F;
+  --pink-t:#FFE1EC; --blue-t:#E1E7FF; --violet-t:#EDE0FF; --orange-t:#FFE6D6; --green-t:#D6F4E8; --yellow-t:#FFF1C6;
+  --teal:#0E7FA8; --teal-t:#D9F0F8;
+  --shadow:0 10px 28px -16px rgba(60,40,170,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F0D26; --surface:#1A1740; --surface2:#221E4F; --ink:#F0EEFF; --muted:#A5A1D2;
+    --line:#2E2A62; --line2:#4A4590;
+    --pink-t:#3C1631; --blue-t:#18224F; --violet-t:#2C1A57; --orange-t:#3D2013; --green-t:#0F3329; --yellow-t:#3A3010; --teal-t:#0F3040;
+    --shadow:0 10px 28px -16px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F0D26; --surface:#1A1740; --surface2:#221E4F; --ink:#F0EEFF; --muted:#A5A1D2;
+  --line:#2E2A62; --line2:#4A4590;
+  --pink-t:#3C1631; --blue-t:#18224F; --violet-t:#2C1A57; --orange-t:#3D2013; --green-t:#0F3329; --yellow-t:#3A3010; --teal-t:#0F3040;
+  --shadow:0 10px 28px -16px rgba(0,0,0,.6);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.45 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+h1,h2,h3,.disp{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif;margin:0;letter-spacing:-.02em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0;text-align:inherit}
+input,select,textarea{background:var(--surface2);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent,var(--blue))}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+:focus-visible{outline:3px solid var(--accent,var(--blue));outline-offset:2px}
+.muted{color:var(--muted)}
+.c-pink{--accent:var(--pink);--accent-t:var(--pink-t)}
+.c-blue{--accent:var(--blue);--accent-t:var(--blue-t)}
+.c-violet{--accent:var(--violet);--accent-t:var(--violet-t)}
+.c-orange{--accent:var(--orange);--accent-t:var(--orange-t)}
+.c-green{--accent:var(--green);--accent-t:var(--green-t)}
+.c-yellow{--accent:#B98500;--accent-t:var(--yellow-t)}
+.c-teal{--accent:var(--teal);--accent-t:var(--teal-t)}
+
+/* shell */
+.side{display:none}
+.main{padding:16px 16px 100px}
+.wrap{max-width:1180px;margin:0 auto}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:2px;background:var(--surface);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:14px;color:var(--muted);font-size:11px;font-weight:600}
+.tab.on{background:var(--accent-t);color:var(--accent)}
+@media(min-width:900px){
+  .tabbar{display:none}
+  .side{display:flex;flex-direction:column;gap:6px;position:fixed;left:0;top:0;bottom:0;width:236px;padding:calc(24px + env(safe-area-inset-top,0px)) 14px 20px;background:var(--surface);border-right:1px solid var(--line)}
+  .main{margin-left:236px;padding:28px 36px 56px}
+}
+.brand{font:800 24px "Bricolage Grotesque",Figtree,sans-serif;letter-spacing:-.03em;padding:0 10px 14px}
+.brand span{color:var(--pink)}
+.snav{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:14px;font-weight:600;color:var(--muted);width:100%}
+.snav:hover{background:var(--surface2)}
+.snav.on{background:var(--accent-t);color:var(--accent)}
+.side-foot{margin-top:auto;padding:12px;border-radius:16px;background:var(--yellow-t)}
+.side-foot b{display:block;font:700 15px "Bricolage Grotesque",Figtree,sans-serif}
+
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.top h1{font-size:30px;font-weight:800;line-height:1.1}
+.top p{margin:4px 0 0;color:var(--muted)}
+.top-r{display:flex;align-items:center;gap:8px;flex:none}
+.status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+.status i{width:8px;height:8px;border-radius:99px;background:var(--line2)}
+.status.saved i{background:var(--green)}
+.status.saving i{background:var(--yellow)}
+.status.error i{background:var(--pink)}
+.status.offline i{background:var(--orange)}
+.status.syncerr i{background:var(--orange)}
+.icon-btn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--muted);background:var(--surface);border:1px solid var(--line)}
+.icon-btn.sm{width:30px;height:30px;border-radius:9px;background:none;border:0}
+.icon-btn:hover{color:var(--ink);background:var(--surface2)}
+
+/* primitives */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.card + .card{margin-top:14px}
+.card h2{font-size:18px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card h2 small{font:600 13px Figtree,sans-serif;color:var(--muted);letter-spacing:0}
+.grid2{display:grid;gap:14px;align-items:start}
+.grid2>div>.card + .card{margin-top:14px}
+@media(min-width:900px){.grid2{grid-template-columns:1.15fr 1fr}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:99px;font-weight:700;background:var(--surface2);border:1.5px solid var(--line)}
+.btn.primary{background:var(--accent,var(--blue));color:#fff;border-color:transparent}
+.btn.ghost{background:none}
+.btn.danger{color:var(--pink)}
+.btn.sm{padding:7px 14px;font-size:14px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.5;cursor:default}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;background:var(--accent-t);color:var(--accent);font-size:12px;font-weight:700;white-space:nowrap}
+.badge.late{background:var(--pink-t);color:var(--pink)}
+.badge.today{background:var(--yellow-t);color:#8A6100}
+:root[data-theme="dark"] .badge.today{color:var(--yellow)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .badge.today{color:var(--yellow)}}
+.bar{height:10px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent,var(--blue));border-radius:99px;transition:width .45s ease}
+.bar.tall{height:14px}
+.seg{display:flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:99px;margin-bottom:14px;width:fit-content;max-width:100%;overflow-x:auto}
+.seg button{padding:8px 16px;border-radius:99px;font-weight:700;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--accent);color:#fff}
+.empty{padding:22px 14px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);margin-bottom:4px}
+.empty-s{color:var(--muted);padding:14px 0}
+.row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row-main{flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;cursor:pointer}
+.row-main .t{overflow-wrap:anywhere}
+.row.done .t{text-decoration:line-through;color:var(--muted)}
+.check{flex:none;width:26px;height:26px;border-radius:9px;border:2px solid var(--line2);position:relative;background:var(--surface)}
+.check[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.check[aria-pressed="true"]::after{content:"";position:absolute;left:8px;top:3px;width:6px;height:12px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.prio{width:8px;height:8px;border-radius:99px;flex:none}
+.prio.p1{background:var(--yellow)}
+.prio.p2{background:var(--pink)}
+.addrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.addrow input[type=text]{flex:1 1 160px}
+.addrow input[type=date]{flex:0 1 150px}
+.sub-h{font:700 13px Figtree,sans-serif;color:var(--muted);margin:16px 0 4px}
+.sub-h.late{color:var(--pink)}
+
+/* hero (Danas) */
+.hero{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--pink);color:#fff;border-radius:28px;padding:22px 22px 22px 24px;margin-bottom:14px;overflow:hidden}
+.hero-day{font:800 clamp(72px,18vw,112px)/.85 "Bricolage Grotesque",Figtree,sans-serif;letter-spacing:-.06em}
+.hero-meta{margin-top:10px;font-weight:700;font-size:17px}
+.hero-meta span{display:block;font-weight:500;opacity:.85;font-size:14px}
+.hero-hi{margin:12px 0 0;max-width:30ch;font-weight:600}
+.ring{position:relative;width:128px;height:128px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:11;stroke-linecap:round}
+.ring .tr{stroke:rgba(255,255,255,.28)}
+.ring .pr{stroke:#fff;transition:stroke-dasharray .6s ease}
+.ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 28px "Bricolage Grotesque",Figtree,sans-serif;line-height:1}
+.ring-c small{font:600 11px Figtree,sans-serif;opacity:.9;margin-top:4px}
+@media(max-width:420px){.ring{width:104px;height:104px}.ring-c{font-size:23px}}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.tile{border-radius:18px;padding:12px 12px 13px;background:var(--accent-t);color:var(--ink);min-width:0}
+.tile .k{font-size:12px;font-weight:700;color:var(--accent)}
+.tile .v{font:800 26px/1.1 "Bricolage Grotesque",Figtree,sans-serif;margin:3px 0 6px}
+.tile .v small{font:600 12px Figtree,sans-serif;color:var(--muted);letter-spacing:0}
+.tile .bar{height:7px;background:rgba(0,0,0,.08)}
+.tile .s{font-size:12px;color:var(--muted)}
+.hchips{display:flex;flex-wrap:wrap;gap:8px}
+.hchip{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:99px;background:var(--surface2);border:1.5px solid var(--line);font-weight:600}
+.hchip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.hchip small{font-weight:700;opacity:.8}
+.moods{display:flex;gap:8px;justify-content:space-between}
+.mood{flex:1;padding:10px 0;border-radius:14px;background:var(--surface2);border:1.5px solid var(--line);font-size:26px;text-align:center;line-height:1}
+.mood small{display:block;font:600 11px Figtree,sans-serif;color:var(--muted);margin-top:6px}
+.mood.on{border-color:var(--accent);background:var(--accent-t)}
+
+/* plan */
+.daychips{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}
+.daychips button{flex:1;min-width:46px;padding:9px 0;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-weight:700;text-align:center;position:relative}
+.daychips button.on{background:var(--accent);color:#fff;border-color:transparent}
+.daychips button.today:not(.on){border-color:var(--accent);color:var(--accent)}
+.daychips button i{position:absolute;bottom:4px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:99px;background:currentColor;opacity:.6}
+.week{display:grid;gap:12px}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px}
+.day h3{font-size:16px;margin-bottom:8px}
+.day.today h3{color:var(--accent)}
+.block{display:block;width:100%;padding:9px 11px;border-radius:12px;background:var(--bt);border-left:4px solid var(--bc);margin-bottom:8px}
+.block .tm{display:block;font-size:12px;font-weight:700;color:var(--bc)}
+.block .bt{display:block;font-weight:600;overflow-wrap:anywhere}
+.b-faks{--bc:var(--violet);--bt:var(--violet-t)}
+.b-gym{--bc:var(--orange);--bt:var(--orange-t)}
+.b-posao{--bc:var(--blue);--bt:var(--blue-t)}
+.b-licno{--bc:var(--green);--bt:var(--green-t)}
+.b-odmor{--bc:#B98500;--bt:var(--yellow-t)}
+.block.now{box-shadow:0 0 0 2px var(--bc)}
+.add-in{width:100%;padding:8px;border-radius:12px;border:1.5px dashed var(--line2);color:var(--muted);font-weight:600;text-align:center}
+@media(max-width:1199px){.day:not(.sel){display:none}}
+@media(min-width:1200px){.daychips{display:none}.week{grid-template-columns:repeat(7,minmax(0,1fr))}}
+
+/* faks */
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.subjects{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.subj{display:block;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 13px;border-top:6px solid var(--accent);box-shadow:var(--shadow)}
+.subj-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px}
+.subj-top b{font:700 17px "Bricolage Grotesque",Figtree,sans-serif;overflow-wrap:anywhere}
+.subj-meta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:13px;color:var(--muted)}
+.timer{display:flex;flex-direction:column;align-items:center;gap:12px}
+.timer-t{font:800 64px/1 "Bricolage Grotesque",Figtree,sans-serif;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.timer-r{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pre{padding:7px 14px;border-radius:99px;border:1.5px solid var(--line);font-weight:700;color:var(--muted)}
+.pre.on{background:var(--accent-t);border-color:var(--accent);color:var(--accent)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:110px}
+.bars>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%;font-size:11px;color:var(--muted)}
+.bars i{display:block;width:100%;background:var(--accent);border-radius:8px 8px 3px 3px;min-height:4px}
+.bars .z i{background:var(--line)}
+.bars .td b{color:var(--accent)}
+.back{display:inline-flex;align-items:center;gap:4px;margin-bottom:12px;font-weight:700;color:var(--muted)}
+
+/* gym */
+.dots{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dots i{width:22px;height:22px;border-radius:99px;border:2.5px solid var(--line2)}
+.dots i.on{background:var(--accent);border-color:var(--accent)}
+.plans{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.plan-b{display:block;width:100%;padding:16px;border-radius:18px;background:var(--accent);color:#fff;font:700 17px "Bricolage Grotesque",Figtree,sans-serif}
+.plan-b small{display:block;font:500 13px Figtree,sans-serif;opacity:.9;margin-top:3px}
+.ex-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ex-h b{flex:1;font:700 17px "Bricolage Grotesque",Figtree,sans-serif}
+.sets{display:grid;gap:6px;margin-bottom:10px}
+.sets-h,.set{display:grid;grid-template-columns:44px 1fr 1fr 34px;gap:8px;align-items:center}
+.sets-h{font-size:12px;font-weight:700;color:var(--muted)}
+.set .sn{font-weight:800;color:var(--accent);text-align:center}
+.set input{text-align:center;padding:9px 6px;font-weight:700}
+.chart{width:100%;height:auto;display:block;color:var(--accent)}
+.chart text{fill:var(--muted);font:600 10px Figtree,sans-serif}
+.kv{display:flex;gap:20px;margin-bottom:6px;flex-wrap:wrap}
+.kv b{display:block;font:800 26px "Bricolage Grotesque",Figtree,sans-serif}
+.kv span{font-size:12px;color:var(--muted)}
+.hist{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.hist:last-child{border-bottom:0}
+.hist small{display:block;color:var(--muted)}
+.plan-ex{margin:8px 0 12px;padding-left:0;list-style:none}
+.plan-ex li{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
+.plan-ex li span{color:var(--muted)}
+
+/* ja */
+.dnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.dnav b{font:700 18px "Bricolage Grotesque",Figtree,sans-serif;text-align:center;flex:1}
+.fl{display:block;margin-bottom:12px;font-weight:600}
+.fl span{display:block;margin-bottom:5px;font-size:13px;color:var(--muted)}
+.entry{display:block;width:100%;padding:11px 0;border-bottom:1px solid var(--line)}
+.entry:last-child{border-bottom:0}
+.entry b{display:flex;gap:8px;align-items:center}
+.entry p{margin:3px 0 0;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.goal-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.goal-h b{font:700 18px "Bricolage Grotesque",Figtree,sans-serif;overflow-wrap:anywhere}
+.habit-grid{display:grid;grid-template-columns:minmax(90px,1.4fr) repeat(7,minmax(30px,1fr)) 48px;gap:6px;align-items:center}
+.habit-grid .hh{font-size:11px;font-weight:700;color:var(--muted);text-align:center}
+.habit-grid .hn{font-weight:600;overflow-wrap:anywhere;cursor:pointer}
+.hc{width:100%;aspect-ratio:1;max-width:34px;margin:0 auto;border-radius:10px;border:2px solid var(--line2);background:var(--surface)}
+.hc.on{background:var(--accent);border-color:var(--accent)}
+.hs{font-weight:800;text-align:right;font-size:13px}
+.qchips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* budzet */
+.tile .v.sm{font-size:17px;line-height:1.25;overflow-wrap:anywhere}
+.bar.over i{background:var(--pink)}
+.amt{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.amt.in{color:var(--green)}
+.amt.save{color:var(--blue)}
+.tx{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);width:100%}
+.tx:last-child{border-bottom:0}
+.tx .dot{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--accent-t);color:var(--accent);font-weight:800;flex:none}
+.tx-main{flex:1;min-width:0}
+.tx-main b{display:block;overflow-wrap:anywhere}
+.tx-main small{color:var(--muted)}
+.catrow{display:block;width:100%;padding:10px 0;border-bottom:1px solid var(--line)}
+.catrow:last-child{border-bottom:0}
+.catrow .ch{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}
+.catrow .ch b{overflow-wrap:anywhere}
+.catrow .ch span{color:var(--muted);font-size:13px;white-space:nowrap}
+
+/* sheet + toast */
+.scrim{position:fixed;inset:0;background:rgba(14,10,40,.55);z-index:40}
+.sheet{position:fixed;z-index:41;left:0;right:0;bottom:0;max-height:90vh;max-height:90dvh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sheet-h h3{font-size:22px;font-weight:800}
+.sheet-f{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+.sheet-f .btn.primary{flex:1}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw label{cursor:pointer}
+.sw input{position:absolute;opacity:0;width:0;height:0}
+.sw i{display:block;width:34px;height:34px;border-radius:99px;border:3px solid transparent;background-clip:padding-box;outline:2px solid transparent}
+.sw input:checked + i{outline:3px solid var(--ink);outline-offset:1px}
+.sw input:focus-visible + i{outline:3px solid var(--blue)}
+.sheet .row2{display:flex;gap:10px}
+.sheet .row2>*{flex:1}
+@media(min-width:700px){.sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:480px;border-radius:24px;animation:pop .2s ease-out}}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pop{from{transform:translate(-50%,-47%);opacity:0}to{transform:translate(-50%,-50%);opacity:1}}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-weight:700;box-shadow:0 12px 30px -10px rgba(0,0,0,.5);animation:up .2s ease-out;max-width:90vw;text-align:center}
+@media(min-width:900px){.toast{bottom:32px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.seg,.daychips{scrollbar-width:none;-ms-overflow-style:none}
+.seg::-webkit-scrollbar,.daychips::-webkit-scrollbar{display:none}
+.seg button{padding:8px 14px}
+.daychips{gap:6px;padding:2px 1px 6px}
+.daychips button{min-width:0;padding:12px 0}
+.week{gap:14px}
+.day{padding:16px}
+.day h3{margin-bottom:12px}
+.block{padding:11px 13px;margin-bottom:10px}
+.add-in{padding:10px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.cal-nav b{font:800 19px "Bricolage Grotesque",Figtree,sans-serif;text-transform:capitalize;color:var(--accent)}
+.cal-wd,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.cal-wd span{text-align:center;font-size:12px;font-weight:700;color:var(--muted);padding:4px 0}
+.cal-grid{row-gap:4px}
+.cal-d{height:50px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700;font-size:15px}
+.cal-d.today:not(.on){box-shadow:inset 0 0 0 2px var(--accent);color:var(--accent)}
+.cal-d.on{background:var(--accent);color:#fff}
+.cal-d .dots{display:flex;gap:3px;height:6px}
+.cal-d .dots i{display:block;width:7px;height:7px;border-radius:99px;background:var(--c)}
+.cal-d.on .dots i{background:#fff}
+.cal-ev{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:12px;background:var(--surface2);border-left:4px solid var(--c,var(--line2));margin-bottom:8px}
+.cal-ev .t{display:block;font-weight:700;overflow-wrap:anywhere}
+.cal-ev small{display:block;color:var(--muted);font-size:12px;font-weight:600}
+.cal-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.cal-top h2{flex:1;min-width:0}
+.cal-top .btn{flex:none;white-space:nowrap}
+.mstats{display:flex;gap:8px;margin-bottom:12px}
+.mstats div{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
+.mstats b{display:block;font:800 22px "Bricolage Grotesque",Figtree,sans-serif;color:var(--c)}
+.mstats small{font-size:12px;color:var(--muted);font-weight:600}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.chip{padding:7px 13px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:13px}
+.chip.on{background:var(--accent);color:#fff;border-color:transparent}
+.mi{display:flex;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px;margin-bottom:10px;box-shadow:var(--shadow)}
+.cover{width:62px;height:93px;border-radius:9px;flex:none;background:var(--cv,#8B3DFF) center/cover no-repeat;color:#fff;font-weight:800;font-size:10.5px;line-height:1.2;padding:6px;display:flex;align-items:flex-end;overflow:hidden;box-sizing:border-box;overflow-wrap:anywhere}
+.cover.has{padding:0}
+.cover:not(.has){align-items:center;justify-content:center;font-size:30px;font-weight:800;padding:0}
+.mi-b{flex:1;min-width:0}
+.mi-t{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.mi-t b{font-size:15px;overflow-wrap:anywhere}
+.mi-s{font-size:12px;color:var(--muted);margin:2px 0 3px;font-weight:600}
+.stars{font-size:17px;letter-spacing:1px;color:#FFC21F;line-height:1.2}
+.stars .off{color:var(--line2)}
+.mi-r{font-size:13px;color:var(--muted);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.starpick{display:flex;gap:4px}
+.starpick button{font-size:32px;line-height:1;color:var(--line2);padding:2px}
+.starpick button.on{color:#FFC21F}
+.cvpick{display:flex;gap:12px;align-items:center}
+.cvpick .cover{width:72px;height:108px}
+.cvpick input[type=file]{padding:8px;font-size:13px}
+.emo{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.emo label{display:block}
+.emo input{position:absolute;opacity:0;width:0;height:0}
+.fl .emo span{display:flex;align-items:center;justify-content:center;height:40px;margin:0;border-radius:12px;background:var(--surface2);font-size:21px;color:var(--ink);border:2px solid transparent;cursor:pointer}
+.fl .emo input:checked+span{border-color:var(--accent);background:var(--accent-t)}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="side" id="side"></aside>
+  <main class="main"><div class="wrap" id="view"></div></main>
+  <nav class="tabbar" id="tabbar" aria-label="Glavna navigacija"></nav>
+</div>
+<div id="sheet"></div>
+<div id="toast"></div>
+
+<script src="firebase-config.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- helpers ---------- */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+const sn=s=>(s.emoji?s.emoji+' ':'')+esc(s.name);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
+const TODAY=()=>ymd(new Date());
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return ymd(d);};
+const diffDays=(a,b)=>Math.round((parse(a)-parse(b))/86400000);
+const dow=s=>(parse(s).getDay()+6)%7;
+const weekStart=s=>addDays(s,-dow(s));
+const DAYS=['Ponedeljak','Utorak','Sreda','Četvrtak','Petak','Subota','Nedelja'];
+const DAYS3=['Pon','Uto','Sre','Čet','Pet','Sub','Ned'];
+const MONTHS=['januar','februar','mart','april','maj','jun','jul','avgust','septembar','oktobar','novembar','decembar'];
+const fmtLong=s=>{const d=parse(s);return DAYS[dow(s)]+', '+d.getDate()+'. '+MONTHS[d.getMonth()];};
+const fmtShort=s=>{const d=parse(s);return d.getDate()+'. '+MONTHS[d.getMonth()].slice(0,3);};
+const fmtN=n=>Number.isInteger(n)?String(n):n.toFixed(1).replace('.',',');
+const fmtMin=m=>m>=60?Math.floor(m/60)+' h'+(m%60?' '+(m%60)+' min':''):m+' min';
+const num=v=>parseFloat(String(v==null?'':v).replace(',','.'))||0;
+const clean=o=>JSON.parse(JSON.stringify(o));
+
+const CATS={faks:['Faks'],gym:['Teretana'],posao:['Posao'],licno:['Lično'],odmor:['Odmor']};
+const GOALCATS=['Faks','Zdravlje','Novac','Karijera','Lično'];
+const MOODS=[['😞','Loše'],['😕','Slabije'],['😐','Onako'],['🙂','Dobro'],['😄','Odlično']];
+const SWATCH=['#8B3DFF','#3B5BFF','#E8246F','#D94A06','#078A62','#B98500','#0E7FA8','#6B4B3A'];
+const QUICKHABITS=['Voda 2 l','Šetnja','Čitanje 20 min','Spavanje do 23h','Istezanje'];
+const NAV=[['danas','Danas','home','pink'],['plan','Raspored','cal','blue'],['faks','Faks','book','violet'],['gym','Teretana','dumb','orange'],['budzet','Budžet','wallet','teal'],['ja','Dnevnik','pen','green']];
+
+const ICONS={
+ home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/>',
+ cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+ book:'<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/>',
+ dumb:'<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',
+ pen:'<path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19z"/><path d="M14.5 6.5l3 3"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
+ wallet:'<path d="M4 8V7a2.5 2.5 0 0 1 2.5-2.5H18"/><rect x="3.5" y="7.5" width="17" height="12" rx="3"/><circle cx="16.5" cy="13.5" r="1.2"/>',
+ x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ back:'<path d="M15 6l-6 6 6 6"/>',
+ fwd:'<path d="M9 6l6 6-6 6"/>',
+ play:'<path d="M7 5l12 7-12 7z"/>',
+ pause:'<path d="M8 5v14M16 5v14"/>'
+};
+const ic=(n,s)=>'<svg width="'+(s||22)+'" height="'+(s||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICONS[n]+'</svg>';
+
+/* ---------- state ---------- */
+const defaultCats=()=>['Hrana','Prevoz','Smeštaj i računi','Izlasci','Faks i knjige','Zdravlje','Ostalo'].map(n=>({id:uid(),name:n,limit:0}));
+const blank=()=>({v:1,settings:{name:'',gym:3,theme:'auto',currency:'RSD'},tx:[],budget:{monthly:0,goal:{name:'',target:0},cats:defaultCats()},tasks:[],blocks:[],subjects:[],study:[],plans:[],sessions:[],body:[],habits:[],habitLog:{},journal:{},goals:[],draft:null,dates:[],media:[]});
+function norm(o){
+  const b=blank();o=o||{};
+  ['tasks','blocks','subjects','study','plans','sessions','body','habits','goals','dates','media'].forEach(k=>{b[k]=Array.isArray(o[k])?o[k]:[];});
+  b.settings=Object.assign(b.settings,o.settings||{});
+  b.habitLog=(o.habitLog&&typeof o.habitLog==='object')?o.habitLog:{};
+  b.journal=(o.journal&&typeof o.journal==='object')?o.journal:{};
+  b.draft=o.draft||null;
+  b.tx=Array.isArray(o.tx)?o.tx:[];
+  if(o.budget&&Array.isArray(o.budget.cats))b.budget={monthly:Number(o.budget.monthly)||0,goal:Object.assign({name:'',target:0},o.budget.goal||{}),cats:o.budget.cats};
+  b.subjects.forEach(s=>{s.topics=s.topics||[];s.kols=s.kols||[];});
+  b.goals.forEach(g=>{g.milestones=g.milestones||[];});
+  b.sessions.sort((a,c)=>(a.at||0)-(c.at||0));
+  return b;
+}
+let S=blank();
+const ui={sub:{plan:'nedelja',gym:'trening',ja:'dnevnik'},planDay:dow(TODAY()),subject:null,jDate:TODAY(),exSel:'',bMonth:TODAY().slice(0,7),cal:{m:TODAY().slice(0,7),sel:TODAY()},mF:'sve'};
+let view='danas';
+
+/* ---------- persistence ---------- */
+const LS_KEY='moj-zivot-v1';
+let db=null,uidStr=null,known=new Set(),lastWritten={};
+let saveTimer=null,saving=false,pending=false,dirty=false,saveState='local';
+let lsWarn=0;
+const lsSave=()=>{try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){if(!lsWarn){lsWarn=1;try{toast('Memorija telefona je puna. Obriši neke slike.');}catch(_){}}}};
+const lsLoad=()=>{try{const t=localStorage.getItem(LS_KEY);return t?JSON.parse(t):null;}catch(e){return null;}};
+const ref=id=>db.doc('data/users/'+uidStr+'/'+id);
+
+function toDocs(){
+  const docs={core:clean({settings:S.settings,tasks:S.tasks,blocks:S.blocks,subjects:S.subjects,plans:S.plans,habits:S.habits,goals:S.goals,body:S.body,draft:S.draft,budget:S.budget,dates:S.dates})};
+  const mon={};
+  const m=d=>{const k=d.slice(0,7);return mon[k]||(mon[k]={journal:{},habitLog:{},sessions:[],study:[],tx:[]});};
+  for(const d in S.journal){const j=S.journal[d];if(j&&(j.mood||(j.text||'').trim()||(j.good||'').trim()))m(d).journal[d]=j;}
+  for(const d in S.habitLog){if(S.habitLog[d]&&S.habitLog[d].length)m(d).habitLog[d]=S.habitLog[d];}
+  S.sessions.forEach(x=>m(x.date).sessions.push(x));
+  S.study.forEach(x=>m(x.date).study.push(x));
+  S.tx.forEach(x=>m(x.date).tx.push(x));
+  for(const k in mon)docs['log-'+k]=clean(mon[k]);
+  S.media.forEach(m=>{if(m&&m.id)docs['m-'+m.id]=clean(m);});
+  return docs;
+}
+function fromDocs(map){
+  const c=map.core||{};
+  const o={settings:c.settings,tasks:c.tasks,blocks:c.blocks,subjects:c.subjects,plans:c.plans,habits:c.habits,goals:c.goals,body:c.body,draft:c.draft,budget:c.budget,dates:c.dates,media:[],
+    journal:{},habitLog:{},sessions:[],study:[],tx:[]};
+  for(const id in map){
+    if(id.indexOf('m-')===0){const mm=map[id];if(mm&&mm.id)o.media.push(mm);continue;}
+    if(id.indexOf('log-')!==0)continue;
+    const l=map[id];
+    Object.assign(o.journal,l.journal||{});
+    Object.assign(o.habitLog,l.habitLog||{});
+    (l.sessions||[]).forEach(x=>o.sessions.push(x));
+    (l.study||[]).forEach(x=>o.study.push(x));
+    (l.tx||[]).forEach(x=>o.tx.push(x));
+  }
+  return norm(o);
+}
+async function flush(){
+  if(FB.on)return fbFlush();
+  if(!db){saveState='local';renderStatus();return;}
+  if(saving){pending=true;return;}
+  saving=true;saveState='saving';renderStatus();
+  try{
+    do{
+      pending=false;
+      const docs=toDocs();
+      for(const id in docs){
+        const j=JSON.stringify(docs[id]);
+        if(lastWritten[id]===j)continue;
+        await ref(id).set(docs[id]);
+        lastWritten[id]=j;known.add(id);
+      }
+      for(const id of Array.from(known)){
+        if(!docs[id]){await ref(id).delete();known.delete(id);delete lastWritten[id];}
+      }
+    }while(pending);
+    saveState='saved';
+  }catch(e){saveState='error';console.error(e);}
+  saving=false;renderStatus();
+}
+function queueSave(){
+  dirty=true;lsSave();
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(flush,600);
+  if(db||(FB.on&&fbSynced)){saveState=(FB.on&&!navigator.onLine)?'offline':'saving';renderStatus();}
+}
+function renderStatus(){
+  const el=$('#status');if(!el)return;
+  const t=(saveState==='saved'&&FB.on&&FB.user)?'Sinhronizovano':{saved:'Sačuvano',saving:'Čuvam…',local:'Samo na ovom uređaju',error:'Greška pri čuvanju',offline:'Nema interneta',signedout:'Nisi prijavljen',connecting:'Povezujem se…',syncerr:'Sinhronizacija nije dostupna'}[saveState];
+  el.className='status '+saveState;
+  el.innerHTML='<i></i>'+t;
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveTimer){clearTimeout(saveTimer);saveTimer=null;flush();}});
+function hasContent(){return S.tasks.length||S.blocks.length||S.subjects.length||S.plans.length||S.sessions.length||S.habits.length||S.goals.length||S.body.length||S.tx.length||S.dates.length||S.media.length||Object.keys(S.journal).length;}
+
+/* ---------- Firebase sync ---------- */
+const FBC=window.FIREBASE_CONFIG||null;
+const FBV='10.14.1';
+const SYNC_KEY='moj-zivot-sync-v1';
+const FB={on:!!(FBC&&FBC.apiKey&&FBC.projectId),adapter:null,user:null,uid:null,unsub:null,err:null,loading:false,applyVer:0,pushSeq:0,latest:null,latestSeq:0,defT:null,retryT:null};
+let syncBase={},fbSeen={},fbSynced=false,fbSaving=false,fbPending=false;
+const FB_TO=window.__FB_TIMEOUT__||12000;
+const withTO=p=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(Object.assign(new Error('timeout'),{code:'timeout'})),FB_TO))]);
+
+const canon=v=>Array.isArray(v)?'['+v.map(canon).join(',')+']':(v&&typeof v==='object')?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}':JSON.stringify(v);
+function hh(d){
+  const s=canon(d);let h1=0xdeadbeef,h2=0x41c6ce57;
+  for(let i=0;i<s.length;i++){const ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);
+}
+function mergeVal(a,b){
+  if(Array.isArray(a)&&Array.isArray(b)){
+    const objs=a.concat(b).some(x=>x&&typeof x==='object');
+    if(!objs)return Array.from(new Set(a.concat(b)));
+    const seen=new Set(),out=[];
+    a.concat(b).forEach(x=>{if(x&&x.id!==undefined){if(seen.has(x.id))return;seen.add(x.id);}out.push(x);});
+    return out;
+  }
+  if(a&&b&&typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)&&!Array.isArray(b)){
+    const o={};
+    new Set(Object.keys(a).concat(Object.keys(b))).forEach(k=>{o[k]=(k in a&&k in b)?mergeVal(a[k],b[k]):(k in a?a[k]:b[k]);});
+    return o;
+  }
+  return a!==undefined?a:b;
+}
+function mergeDoc(id,a,b){
+  const m=mergeVal(a,b);
+  if(id==='core')m.draft=a.draft||b.draft||null;
+  return clean(m);
+}
+function remapCats(L,cloud){
+  const lc=L.core&&L.core.budget&&L.core.budget.cats,cc=cloud.core&&cloud.core.budget&&cloud.core.budget.cats;
+  if(!lc||!cc)return;
+  const byName={};cc.forEach(c=>{byName[(c.name||'').toLowerCase()]=c.id;});
+  const map={};
+  L.core.budget.cats=lc.filter(c=>{const k=(c.name||'').toLowerCase();if(byName[k]!==undefined&&byName[k]!==c.id){map[c.id]=byName[k];return false;}return true;});
+  Object.keys(L).forEach(id=>{if(id.indexOf('log-')===0&&L[id].tx)L[id].tx.forEach(x=>{if(map[x.cat])x.cat=map[x.cat];});});
+}
+function saveSync(){try{localStorage.setItem(SYNC_KEY,JSON.stringify({uid:FB.uid,base:syncBase}));}catch(e){}}
+function uiBusy(){
+  if(typeof sheet!=='undefined'&&sheet)return true;
+  const a=document.activeElement;
+  return !!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+}
+
+async function makeAdapter(){
+  const b='https://www.gstatic.com/firebasejs/'+FBV+'/';
+  const r=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
+  const M=r[0],AU=r[1],FS=r[2];
+  const app=M.initializeApp(FBC),auth=AU.getAuth(app),fdb=FS.getFirestore(app);
+  const prov=new AU.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
+  const col=uid=>FS.collection(fdb,'users',uid,'docs');
+  return {
+    onAuth:cb=>AU.onAuthStateChanged(auth,u=>cb(u?{uid:u.uid,email:u.email||''}:null)),
+    signIn:()=>AU.signInWithPopup(auth,prov).catch(e=>{
+      if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))return AU.signInWithRedirect(auth,prov);
+      throw e;}),
+    signOut:()=>AU.signOut(auth),
+    listen:(uid,cb,eb)=>FS.onSnapshot(col(uid),{includeMetadataChanges:true},snap=>{const m={};snap.forEach(d=>{m[d.id]=d.data();});cb(m,snap.metadata.fromCache);},eb),
+    set:(uid,id,data,expected)=>FS.runTransaction(fdb,async tx=>{
+      const r=FS.doc(fdb,'users',uid,'docs',id),snap=await tx.get(r);
+      const cur=snap.exists()?snap.data():undefined;
+      if((cur===undefined?undefined:hh(cur))!==expected)throw Object.assign(new Error('conflict'),{code:'conflict'});
+      tx.set(r,data);
+    }),
+    del:(uid,id,expected)=>FS.runTransaction(fdb,async tx=>{
+      const r=FS.doc(fdb,'users',uid,'docs',id),snap=await tx.get(r);
+      if(snap.exists()&&hh(snap.data())!==expected)throw Object.assign(new Error('conflict'),{code:'conflict'});
+      tx.delete(r);
+    })
+  };
+}
+
+async function fbBoot(){
+  if(FB.loading||FB.adapter)return;
+  FB.loading=true;saveState='connecting';renderStatus();
+  try{
+    FB.adapter=window.__FB_ADAPTER__||await makeAdapter();
+    FB.adapter.onAuth(onAuthUser);
+  }catch(e){
+    FB.err=e;FB.adapter=null;
+    saveState=navigator.onLine?'syncerr':'offline';renderStatus();
+    if(navigator.onLine)toast('Sinhronizacija trenutno nije dostupna');
+  }
+  FB.loading=false;
+}
+function stopListen(){
+  if(FB.unsub){try{FB.unsub();}catch(e){}FB.unsub=null;}
+  fbSynced=false;clearTimeout(FB.defT);clearTimeout(FB.retryT);FB.latest=null;
+}
+function onAuthUser(u){
+  if(u&&FB.user&&FB.user.uid===u.uid)return;
+  stopListen();
+  FB.user=u;
+  if(!u){saveState='signedout';render();return;}
+  FB.uid=u.uid;
+  let rec=null;try{rec=JSON.parse(localStorage.getItem(SYNC_KEY)||'null');}catch(e){}
+  if(rec&&rec.uid&&rec.uid!==u.uid){
+    try{localStorage.setItem('moj-zivot-backup-'+Date.now(),JSON.stringify(S));}catch(e){}
+    S=blank();lsSave();syncBase={};FB.applyVer++;
+    toast('Ovaj uređaj je bio vezan za drugi nalog. Njegovi podaci su ostali samo lokalno.');
+  }else syncBase=(rec&&rec.base)||{};
+  saveSync();
+  saveState='saving';render();
+  FB.unsub=FB.adapter.listen(u.uid,onCloud,onCloudErr);
+}
+function onCloudErr(e){
+  FB.err=e;saveState=(e&&e.code==='unavailable')||!navigator.onLine?'offline':'error';renderStatus();
+  if(e&&e.code==='permission-denied')toast('Baza odbija pristup. Proveri pravila (Rules) u Firebase-u.');
+}
+function onCloud(map,fromCache){
+  if(fromCache)return;
+  FB.latest=map;FB.latestSeq=FB.pushSeq;
+  if(uiBusy()){scheduleDeferred();return;}
+  FB.latest=null;
+  applyCloud(map);
+}
+function scheduleDeferred(){
+  clearTimeout(FB.defT);
+  FB.defT=setTimeout(()=>{
+    if(!FB.latest)return;
+    if(uiBusy()){scheduleDeferred();return;}
+    const m=FB.latest,seq=FB.latestSeq;FB.latest=null;
+    if(seq!==FB.pushSeq)return;
+    applyCloud(m);
+  },1200);
+}
+function applyCloud(cloud){
+  const L=toDocs(),hc={},hl={};
+  Object.keys(cloud).forEach(id=>{hc[id]=hh(cloud[id]);});
+  Object.keys(L).forEach(id=>{hl[id]=hh(L[id]);});
+  fbSeen=Object.assign({},hc);
+  const first=!Object.keys(syncBase).length;
+  const ids=Array.from(new Set(Object.keys(cloud).concat(Object.keys(L),Object.keys(syncBase))));
+  let out=Object.assign({},L),changed=false;
+  if(first){
+    if(Object.keys(cloud).length){
+      if(!hasContent()){out=Object.assign({},cloud);changed=true;}
+      else{
+        remapCats(L,cloud);
+        ids.forEach(id=>{if(cloud[id]&&L[id])out[id]=mergeDoc(id,L[id],cloud[id]);else if(cloud[id])out[id]=cloud[id];});
+        changed=true;
+      }
+    }
+  }else{
+    for(const id of ids){
+      const l=hl[id],c=hc[id],b=syncBase[id];
+      if(l===c)continue;
+      if(b!==undefined&&l===b){if(c===undefined)delete out[id];else out[id]=cloud[id];changed=true;}
+      else if(b!==undefined&&c===b){/* lokalna izmena, ide u oblak */}
+      else if(b===undefined&&l===undefined){out[id]=cloud[id];changed=true;}
+      else if(b===undefined&&c===undefined){/* novo lokalno, ide u oblak */}
+      else if(c===undefined){/* obrisano u oblaku, a lokalno izmenjeno: zadrži lokalno */}
+      else if(l===undefined){out[id]=cloud[id];changed=true;}
+      else{out[id]=mergeDoc(id,L[id],cloud[id]);changed=true;}
+    }
+  }
+  if(changed){S=fromDocs(out);FB.applyVer++;lsSave();applyTheme();}
+  const L2=toDocs();
+  ids.forEach(id=>{
+    const h=L2[id]?hh(L2[id]):undefined;
+    if(h!==undefined&&h===hc[id])syncBase[id]=h;
+    else if(h===undefined&&hc[id]===undefined)delete syncBase[id];
+  });
+  saveSync();
+  const needPush=ids.some(id=>(L2[id]?hh(L2[id]):undefined)!==hc[id]);
+  const wasSynced=fbSynced;
+  fbSynced=true;
+  if(needPush)fbFlush();
+  else{saveState='saved';FB.err=null;}
+  if(changed){render();if(!wasSynced)toast('Podaci su sinhronizovani');}else renderStatus();
+}
+async function fbFlush(){
+  if(!FB.user||!fbSynced)return;
+  if(fbSaving){fbPending=true;return;}
+  if(!navigator.onLine){saveState='offline';renderStatus();return;}
+  fbSaving=true;saveState='saving';renderStatus();
+  const uid=FB.user.uid;
+  try{
+    do{
+      fbPending=false;
+      const ver=FB.applyVer,docs=toDocs();
+      for(const id of Object.keys(docs)){
+        if(FB.applyVer!==ver){fbPending=true;break;}
+        const hv=hh(docs[id]);
+        if(syncBase[id]===hv)continue;
+        await withTO(FB.adapter.set(uid,id,docs[id],fbSeen[id],hh));
+        syncBase[id]=hv;fbSeen[id]=hv;FB.pushSeq++;
+      }
+      if(!fbPending){
+        for(const id of Object.keys(syncBase)){
+          if(FB.applyVer!==ver){fbPending=true;break;}
+          if(!docs[id]){
+            await withTO(FB.adapter.del(uid,id,fbSeen[id],hh));
+            delete syncBase[id];delete fbSeen[id];FB.pushSeq++;
+          }
+        }
+      }
+      saveSync();
+    }while(fbPending);
+    saveState='saved';FB.err=null;
+  }catch(e){
+    if(e&&e.code==='conflict'){
+      clearTimeout(FB.retryT);FB.retryT=setTimeout(fbFlush,1500);
+      fbSaving=false;saveState='saving';renderStatus();return;
+    }
+    FB.err=e;
+    const off=!navigator.onLine||e.code==='timeout'||e.code==='unavailable';
+    saveState=off?'offline':'error';
+    clearTimeout(FB.retryT);FB.retryT=setTimeout(fbFlush,off?15000:60000);
+    if(e&&e.code==='permission-denied')toast('Baza odbija pristup. Proveri pravila (Rules) u Firebase-u.');
+    console.error(e);
+  }
+  fbSaving=false;renderStatus();
+}
+window.addEventListener('online',()=>{if(!FB.on)return;if(!FB.adapter)fbBoot();else if(fbSynced)fbFlush();else renderStatus();});
+window.addEventListener('offline',()=>{if(!FB.on||!FB.user)return;saveState='offline';renderStatus();});
+function syncBanner(){
+  if(!FB.on||FB.user||!FB.adapter)return '';
+  return '<div class="card c-pink" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px"><div><b>Sinhronizacija je isključena</b><div class="muted">Prijavi se da isti podaci budu na telefonu i računaru.</div></div><button class="btn primary sm" data-a="syncIn">Prijavi se</button></div>';
+}
+function syncHtml(){
+  if(!FB.on)return '';
+  let h='<div class="sub-h">Sinhronizacija</div>';
+  if(FB.user)h+='<p style="margin:0 0 8px">Prijavljen: <b>'+esc(FB.user.email||'nalog')+'</b>. Podaci se čuvaju u oblaku i usklađuju sa drugim uređajima.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" data-a="syncNow">Sinhronizuj sada</button><button class="btn sm" data-a="syncOut">Odjavi se</button></div>';
+  else if(FB.adapter)h+='<p class="muted" style="margin:0 0 8px">Prijavi se da se podaci čuvaju u oblaku i da isti budu na telefonu i računaru.</p><div style="margin-bottom:12px"><button class="btn primary sm" data-a="syncIn">Prijavi se Google nalogom</button></div>';
+  else h+='<p class="muted" style="margin:0 0 12px">Sinhronizacija se učitava ili trenutno nije dostupna.</p>';
+  if(FB.err)h+='<p class="muted" style="font-size:12px;margin:0 0 12px">Poslednja greška: '+esc(FB.err.code||FB.err.message||String(FB.err))+'</p>';
+  return h;
+}
+function applyTheme(){
+  const t=S.settings.theme;
+  if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);
+  else document.documentElement.removeAttribute('data-theme');
+}
+
+/* ---------- derived stats ---------- */
+function stats(){
+  const t=TODAY();
+  const hset=new Set(S.habits.map(h=>h.id));
+  const tasksDone=S.tasks.filter(x=>x.done).length;
+  let habitChecks=0;
+  for(const d in S.habitLog)habitChecks+=S.habitLog[d].filter(id=>hset.has(id)).length;
+  const studyMin=S.study.reduce((a,b)=>a+b.min,0);
+  const jDays=Object.keys(S.journal).filter(d=>{const j=S.journal[d];return (j.text||'').trim()||(j.good||'').trim();});
+  const ms=S.goals.reduce((a,g)=>a+g.milestones.filter(m=>m.done).length,0);
+  const topics=S.subjects.reduce((a,s)=>a+s.topics.filter(x=>x.done).length,0);
+  const kolsP=S.subjects.reduce((a,s)=>a+(s.kols||[]).filter(k=>k.status==='passed').length,0);
+  const xp=tasksDone*10+habitChecks*5+S.sessions.length*50+Math.floor(studyMin/5)*2+jDays.length*15+ms*25+topics*20+kolsP*30+S.tx.length*2;
+  const per=200,level=Math.floor(xp/per)+1,into=xp%per;
+  const titles=[[15,'Legenda'],[10,'Mašina'],[6,'Na dobrom putu'],[3,'U ritmu'],[1,'Početnik']];
+  const title=(titles.find(x=>level>=x[0])||titles[4])[1];
+  const act=new Set();
+  S.tasks.forEach(x=>{if(x.done&&x.doneAt)act.add(x.doneAt);});
+  for(const d in S.habitLog){if(S.habitLog[d].some(id=>hset.has(id)))act.add(d);}
+  S.sessions.forEach(x=>act.add(x.date));
+  S.study.forEach(x=>act.add(x.date));
+  S.tx.forEach(x=>act.add(x.date));
+  jDays.forEach(d=>act.add(d));
+  let streak=0,d=act.has(t)?t:addDays(t,-1);
+  while(act.has(d)){streak++;d=addDays(d,-1);}
+  const ws=weekStart(t);
+  const wk=S.sessions.filter(x=>x.date>=ws&&x.date<=addDays(ws,6)).length;
+  return {xp,level,into,per,title,streak,wk,studyMin};
+}
+function habitStreak(id){
+  const t=TODAY();let d=(S.habitLog[t]||[]).includes(id)?t:addDays(t,-1),n=0;
+  while((S.habitLog[d]||[]).includes(id)){n++;d=addDays(d,-1);}
+  return n;
+}
+function todayList(){const t=TODAY();return S.tasks.filter(x=>(!x.done&&x.due&&x.due<=t)||(x.done&&x.doneAt===t));}
+function lastSets(name){
+  for(let i=S.sessions.length-1;i>=0;i--){
+    const e=S.sessions[i].entries.find(x=>x.name.toLowerCase()===name.toLowerCase());
+    if(e)return e.sets;
+  }
+  return null;
+}
+function studyWeek(){
+  const ws=weekStart(TODAY());const out=[];
+  for(let i=0;i<7;i++){const d=addDays(ws,i);out.push({d,min:S.study.filter(x=>x.date===d).reduce((a,b)=>a+b.min,0)});}
+  return out;
+}
+
+/* ---------- ui bits ---------- */
+function toast(msg){
+  const el=$('#toast');el.innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';
+  clearTimeout(toast.t);toast.t=setTimeout(()=>{el.innerHTML='';},2300);
+}
+function xpToast(L0,txt){const L=stats().level;toast(L>L0?'Nivo '+L+'! Tako treba.':txt);}
+const head=(title,sub)=>'<header class="top"><div><h1>'+title+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div><div class="top-r"><span class="status" id="status"></span><button class="icon-btn" data-a="settings" aria-label="Podešavanja">'+ic('gear')+'</button></div></header>';
+const seg=(k,opts)=>'<div class="seg" role="tablist">'+opts.map(o=>'<button role="tab" aria-selected="'+(ui.sub[k]===o[0])+'" class="'+(ui.sub[k]===o[0]?'on':'')+'" data-a="sub" data-k="'+k+'" data-v="'+o[0]+'">'+o[1]+'</button>').join('')+'</div>';
+const bar=(p,color)=>'<div class="bar"'+(color?' style="--accent:'+color+'"':'')+'><i style="width:'+Math.max(0,Math.min(100,p))+'%"></i></div>';
+function dueBadge(x){
+  if(!x.due)return '';
+  const d=diffDays(x.due,TODAY());
+  if(x.done)return '<span class="badge">'+fmtShort(x.due)+'</span>';
+  if(d<0)return '<span class="badge late">kasni '+(-d)+' d</span>';
+  if(d===0)return '<span class="badge today">danas</span>';
+  if(d===1)return '<span class="badge">sutra</span>';
+  return '<span class="badge">'+fmtShort(x.due)+'</span>';
+}
+function taskRow(x){
+  return '<div class="row '+(x.done?'done':'')+'"><button class="check" aria-pressed="'+!!x.done+'" aria-label="Označi: '+esc(x.title)+'" data-a="toggleTask" data-id="'+x.id+'"></button>'+
+    '<div class="row-main" data-a="editTask" data-id="'+x.id+'"><span class="t">'+esc(x.title)+'</span>'+dueBadge(x)+(x.prio>0&&!x.done?'<i class="prio p'+x.prio+'" title="'+(x.prio===2?'Hitno':'Važno')+'"></i>':'')+'</div></div>';
+}
+function lineChart(pts,unit){
+  if(!pts.length)return '<div class="empty-s">Još nema podataka.</div>';
+  const W=320,H=140,L=34,R=12,T=14,B=24;
+  const ys=pts.map(p=>p.y);let mn=Math.min.apply(null,ys),mx=Math.max.apply(null,ys);
+  const rawMn=mn,rawMx=mx;
+  if(mn===mx){mn-=1;mx+=1;}
+  const pd=(mx-mn)*.18;mn-=pd;mx+=pd;
+  const X=i=>L+(pts.length===1?(W-L-R)/2:i*(W-L-R)/(pts.length-1));
+  const Y=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
+  const line=pts.map((p,i)=>X(i).toFixed(1)+','+Y(p.y).toFixed(1)).join(' ');
+  const dots=pts.map((p,i)=>'<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(p.y).toFixed(1)+'" r="3.6" fill="currentColor"/>').join('');
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Grafikon">'+
+    '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(rawMx).toFixed(1)+'" y2="'+Y(rawMx).toFixed(1)+'" stroke="currentColor" stroke-opacity=".15" stroke-dasharray="3 4"/>'+
+    '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(rawMn).toFixed(1)+'" y2="'+Y(rawMn).toFixed(1)+'" stroke="currentColor" stroke-opacity=".15" stroke-dasharray="3 4"/>'+
+    (pts.length>1?'<polyline points="'+line+'" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>':'')+dots+
+    '<text x="'+(L-6)+'" y="'+(Y(rawMx)+3).toFixed(1)+'" text-anchor="end">'+fmtN(rawMx)+'</text>'+
+    (rawMx!==rawMn?'<text x="'+(L-6)+'" y="'+(Y(rawMn)+3).toFixed(1)+'" text-anchor="end">'+fmtN(rawMn)+'</text>':'')+
+    '<text x="'+L+'" y="'+(H-6)+'" text-anchor="start">'+fmtShort(pts[0].x)+'</text>'+
+    (pts.length>1?'<text x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end">'+fmtShort(pts[pts.length-1].x)+'</text>':'')+
+    '</svg>';
+}
+
+/* ---------- sheet ---------- */
+let sheet=null;
+function fieldHtml(o){
+  const v=o.value==null?'':o.value;
+  if(o.type==='emoji'){const L=(v&&EMOJIS.indexOf(v)<0)?[v].concat(EMOJIS):EMOJIS;return '<div class="fl"><span>'+esc(o.label)+'</span><div class="emo">'+L.map(e=>'<label><input type="radio" name="'+o.name+'" value="'+e+'"'+(e===v?' checked':'')+'><span>'+(e||'–')+'</span></label>').join('')+'</div></div>';}
+  if(o.type==='stars'){const n=Number(v)||0;return '<div class="fl"><span>'+esc(o.label)+'</span><input type="hidden" name="'+o.name+'" value="'+n+'"><div class="starpick">'+[1,2,3,4,5].map(i=>'<button type="button" class="'+(i<=n?'on':'')+'" data-a="setStar" data-v="'+i+'" aria-label="Ocena '+i+' od 5">★</button>').join('')+'</div></div>';}
+  if(o.type==='cover')return '<div class="fl"><span>'+esc(o.label)+'</span><input type="hidden" name="'+o.name+'" value="'+esc(v)+'"><div class="cvpick"><div class="cover has" id="cvprev" style="'+(v?'background-image:url('+v+')':'--cv:#8B3DFF;padding:6px')+'">'+(v?'':'Bez slike')+'</div><div style="flex:1;min-width:0"><input type="file" accept="image/*" data-ch="coverf" aria-label="Izaberi sliku"><button type="button" class="btn ghost sm" data-a="coverClear" style="margin-top:6px">Ukloni sliku</button></div></div></div>';
+  if(o.type==='select')return '<label class="fl"><span>'+esc(o.label)+'</span><select name="'+o.name+'"'+(o.ch?' data-ch="'+o.ch+'"':'')+'>'+o.options.map(op=>'<option value="'+esc(op[0])+'"'+(String(op[0])===String(v)?' selected':'')+'>'+esc(op[1])+'</option>').join('')+'</select></label>';
+  if(o.type==='textarea')return '<label class="fl"><span>'+esc(o.label)+'</span><textarea name="'+o.name+'" rows="'+(o.rows||5)+'" placeholder="'+esc(o.placeholder||'')+'">'+esc(v)+'</textarea></label>';
+  if(o.type==='swatch')return '<div class="fl"><span>'+esc(o.label)+'</span><div class="sw">'+SWATCH.map(c=>'<label><input type="radio" name="'+o.name+'" value="'+c+'"'+(c===v?' checked':'')+'><i style="background:'+c+'"></i></label>').join('')+'</div></div>';
+  return '<label class="fl"><span>'+esc(o.label)+'</span><input name="'+o.name+'" type="'+(o.type||'text')+'" value="'+esc(v)+'" placeholder="'+esc(o.placeholder||'')+'"'+(o.inputmode?' inputmode="'+o.inputmode+'"':'')+(o.type==='number'?' step="any"':'')+'></label>';
+}
+function openSheet(c){sheet=c;renderSheet();document.body.classList.add('lock');}
+function closeSheet(){sheet=null;$('#sheet').innerHTML='';document.body.classList.remove('lock');}
+function renderSheet(){
+  const c=sheet;
+  $('#sheet').innerHTML='<div class="scrim" data-a="sheetClose"></div><div class="sheet c-'+(c.color||'blue')+'" role="dialog" aria-modal="true" aria-label="'+esc(c.title)+'">'+
+    '<div class="sheet-h"><h3>'+esc(c.title)+'</h3><button class="icon-btn sm" data-a="sheetClose" aria-label="Zatvori">'+ic('x')+'</button></div>'+
+    '<div>'+(c.fields?c.fields.map(fieldHtml).join(''):'')+(c.html||'')+'</div>'+
+    '<div class="sheet-f">'+(c.onDelete?'<button class="btn ghost danger" data-a="sheetDelete">Obriši</button>':'')+(c.onSave?'<button class="btn primary" data-a="sheetSave">'+esc(c.saveLabel||'Sačuvaj')+'</button>':'')+'</div></div>';
+  setTimeout(()=>{const f=$('#sheet input:not([type=radio]),#sheet textarea');if(f&&c.focus!==false)f.focus();},60);
+}
+function collect(){const v={};$$('#sheet [name]').forEach(el=>{if(el.type==='radio'){if(el.checked)v[el.name]=el.value;}else v[el.name]=el.value;});return v;}
+function askConfirm(msg,label,fn,color){
+  openSheet({title:'Sigurno?',html:'<p>'+esc(msg)+'</p>',saveLabel:label||'Obriši',color:color,focus:false,onSave:()=>{fn();}});
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sheet)closeSheet();});
+
+/* ---------- views ---------- */
+const VIEWS={};
+
+VIEWS.danas=()=>{
+  const t=TODAY(),d=parse(t),st=stats(),now=new Date();
+  const tl=todayList().sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(b.prio-a.prio));
+  const hl=S.habitLog[t]||[];
+  const hDone=S.habits.filter(h=>hl.includes(h.id)).length;
+  const total=tl.length+S.habits.length,done=tl.filter(x=>x.done).length+hDone;
+  const pct=total?Math.round(done/total*100):0;
+  const h=now.getHours(),greet=h<11?'Dobro jutro':h<18?'Dobar dan':'Dobro veče';
+  const nm=S.settings.name?', '+esc(S.settings.name):'';
+  const msg=!total?'Dodaj prvu obavezu ili naviku pa kreni.':pct===100?'Sve je završeno. Odmor je zaslužen.':pct>=50?'Više od pola je gotovo.':'Kreni od najlakše stvari.';
+  const C=2*Math.PI*44;
+  const nowStr=pad(now.getHours())+':'+pad(now.getMinutes());
+  const bl=S.blocks.filter(b=>b.day===dow(t)).sort((a,b)=>a.start.localeCompare(b.start));
+  const upc=[];
+  S.subjects.forEach(s=>{
+    if(s.exam&&s.exam>=t&&!s.grade)upc.push({s:s,date:s.exam,label:'Ispit'});
+    (s.kols||[]).forEach(k=>{if(k.status==='pending'&&k.date&&k.date>=t)upc.push({s:s,date:k.date,label:k.title});});
+  });
+  upc.sort((a,b)=>a.date.localeCompare(b.date));
+  const exams=upc.slice(0,4);
+  const mood=(S.journal[t]||{}).mood||0;
+  const empty=!S.tasks.length&&!S.blocks.length&&!S.subjects.length&&!S.habits.length;
+  let o=head('Danas');
+  o+='<section class="hero"><div><div class="hero-day">'+d.getDate()+'</div><div class="hero-meta">'+DAYS[dow(t)]+'<span>'+MONTHS[d.getMonth()]+' '+d.getFullYear()+'.</span></div><p class="hero-hi">'+greet+nm+'. '+msg+'</p></div>'+
+    '<div class="ring" role="img" aria-label="Dnevni napredak '+pct+' posto"><svg viewBox="0 0 100 100"><circle class="tr" cx="50" cy="50" r="44"/><circle class="pr" cx="50" cy="50" r="44" stroke-dasharray="'+(pct/100*C).toFixed(1)+' '+C.toFixed(1)+'"/></svg><div class="ring-c">'+(total?pct+'%':'–')+'<small>'+(total?done+' od '+total:'nema stavki')+'</small></div></div></section>';
+  o+=syncBanner();
+  o+='<div class="tiles">'+
+    '<div class="tile c-yellow"><div class="k">Nivo</div><div class="v">'+st.level+' <small>'+esc(st.title)+'</small></div>'+bar(st.into/st.per*100)+'<div class="s" style="margin-top:5px">'+st.into+' / '+st.per+' XP</div></div>'+
+    '<div class="tile c-pink"><div class="k">Niz</div><div class="v">'+st.streak+' <small>'+(st.streak===1?'dan':'dana')+'</small></div><div class="s">uzastopnih aktivnih dana</div></div>'+
+    '<div class="tile c-orange"><div class="k">Trening</div><div class="v">'+st.wk+'/'+S.settings.gym+'</div><div class="s">ove nedelje</div></div></div>';
+  if(empty){
+    o+='<div class="card"><div class="empty"><b>Ovde je još prazno</b>Dodaj prve stvari kroz tabove ispod ili učitaj primer podataka da vidiš kako sve radi. Primer se briše jednim klikom u podešavanjima.</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn primary c-pink" data-a="demo">Učitaj primer</button><button class="btn" data-a="go" data-v="plan">Dodaj raspored</button></div></div>';
+  }
+  o+='<div class="grid2"><div>';
+  o+='<div class="card c-pink"><h2>Za danas <small>'+tl.filter(x=>x.done).length+'/'+tl.length+'</small></h2>'+
+    (tl.length?tl.map(taskRow).join(''):'<div class="empty-s">Nema obaveza sa rokom za danas.</div>')+
+    '<div class="addrow"><input type="text" id="qt" placeholder="Nova obaveza za danas" data-enter="quickTask" aria-label="Nova obaveza"><button class="btn primary" data-a="quickTask">Dodaj</button></div></div>';
+  o+='<div class="card c-green"><h2>Navike <small>'+hDone+'/'+S.habits.length+'</small></h2>'+
+    (S.habits.length?'<div class="hchips">'+S.habits.map(hb=>{const on=hl.includes(hb.id);const s=habitStreak(hb.id);return '<button class="hchip '+(on?'on':'')+'" aria-pressed="'+on+'" data-a="toggleHabit" data-id="'+hb.id+'">'+esc(hb.name)+(s>1?' <small>'+s+'🔥</small>':'')+'</button>';}).join('')+'</div>':
+    '<div class="empty-s">Dodaj navike u delu Dnevnik, pa ih ovde štikliraš svaki dan.</div><button class="btn sm" data-a="goHabits">Dodaj navike</button>')+'</div>';
+  o+='</div><div>';
+  o+='<div class="card c-blue"><h2>Raspored danas <small>'+DAYS[dow(t)]+'</small></h2>'+
+    (bl.length?bl.map(b=>'<button class="block b-'+b.cat+(b.start<=nowStr&&nowStr<b.end?' now':'')+'" data-a="editBlock" data-id="'+b.id+'"><span class="tm">'+b.start+' – '+b.end+(b.start<=nowStr&&nowStr<b.end?' · sada':'')+'</span><span class="bt">'+esc(b.title)+'</span></button>').join(''):'<div class="empty-s">Nema blokova za danas.</div>')+
+    '<button class="add-in" data-a="addBlock" data-day="'+dow(t)+'">+ Dodaj blok</button></div>';
+  o+=budgetCard();
+  if(exams.length)o+='<div class="card c-violet"><h2>Najbliži ispiti i kolokvijumi</h2>'+exams.map(u=>{const s=u.s,n=diffDays(u.date,t);const p=s.topics.length?Math.round(s.topics.filter(x=>x.done).length/s.topics.length*100):0;return '<button class="row" style="width:100%;display:block" data-a="openSubject" data-id="'+s.id+'"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>'+sn(s)+'</b><div class="muted" style="font-size:13px">'+esc(u.label)+'</div></div><span class="badge" style="--accent:'+s.color+';--accent-t:var(--surface2)">'+(n===0?'danas':'za '+n+' d')+'</span></div><div style="margin-top:8px">'+bar(p,s.color)+'</div></button>';}).join('')+'</div>';
+  const udt=upcomingDates(t,30).slice(0,4);
+  if(udt.length)o+='<div class="card c-pink"><h2>Važni datumi</h2>'+udt.map(u=>{const k=KINDS[u.d.kind]||KINDS.ostalo,n=diffDays(u.date,t),ag=ageTxt(u.d,u.date,t);return '<button class="row" style="width:100%;display:block" data-a="openCal" data-d="'+u.date+'"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><b>'+k[0]+' '+esc(u.d.title)+'</b><div class="muted" style="font-size:13px">'+fmtShort(u.date)+(ag?' · '+ag:'')+'</div></div><span class="badge" style="--accent:'+k[2]+';--accent-t:var(--surface2)">'+(n===0?'danas':n===1?'sutra':'za '+n+' d')+'</span></div></button>';}).join('')+'</div>';
+  o+='<div class="card c-green"><h2>Kako si danas?</h2><div class="moods">'+MOODS.map((m,i)=>'<button class="mood '+(mood===i+1?'on':'')+'" aria-pressed="'+(mood===i+1)+'" data-a="moodToday" data-v="'+(i+1)+'">'+m[0]+'<small>'+m[1]+'</small></button>').join('')+'</div></div>';
+  o+='</div></div>';
+  return o;
+};
+
+VIEWS.plan=()=>{
+  let o=head('Raspored','Nedeljni blokovi i obaveze');
+  o+=seg('plan',[['nedelja','Nedelja'],['mesec','Mesec'],['obaveze','Obaveze']]);
+  if(ui.sub.plan==='mesec')return o+planMonth();
+  if(ui.sub.plan==='nedelja'){
+    const ti=dow(TODAY());
+    o+='<div class="c-blue"><div class="daychips">'+DAYS3.map((n,i)=>'<button class="'+(i===ui.planDay?'on':'')+(i===ti?' today':'')+'" data-a="planDay" data-v="'+i+'">'+n+(S.blocks.some(b=>b.day===i)?'<i></i>':'')+'</button>').join('')+'</div>';
+    o+='<div class="week">'+DAYS.map((n,i)=>{
+      const bl=S.blocks.filter(b=>b.day===i).sort((a,b)=>a.start.localeCompare(b.start));
+      return '<section class="day '+(i===ui.planDay?'sel':'')+(i===ti?' today':'')+'"><h3>'+n+'</h3>'+
+        bl.map(b=>'<button class="block b-'+b.cat+'" data-a="editBlock" data-id="'+b.id+'"><span class="tm">'+b.start+' – '+b.end+'</span><span class="bt">'+esc(b.title)+'</span></button>').join('')+
+        '<button class="add-in" data-a="addBlock" data-day="'+i+'">+ Dodaj</button></section>';
+    }).join('')+'</div></div>';
+  }else{
+    const t=TODAY();
+    const open=S.tasks.filter(x=>!x.done);
+    const by=(a,b)=>(a.due||'9999').localeCompare(b.due||'9999')||b.prio-a.prio;
+    const groups=[['Kasni',open.filter(x=>x.due&&x.due<t).sort(by),'late'],['Danas',open.filter(x=>x.due===t).sort(by),''],['Uskoro',open.filter(x=>x.due>t).sort(by),''],['Bez roka',open.filter(x=>!x.due).sort(by),'']];
+    const dn=S.tasks.filter(x=>x.done).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||'')).slice(0,12);
+    o+='<div class="card c-blue"><h2>Obaveze</h2>'+
+      '<div class="addrow" style="margin-top:0"><input type="text" id="nt" placeholder="Šta treba da se uradi?" data-enter="addTask" aria-label="Nova obaveza"><input type="date" id="nd" aria-label="Rok"><button class="btn primary" data-a="addTask">Dodaj</button></div>'+
+      (open.length?groups.filter(g=>g[1].length).map(g=>'<div class="sub-h '+g[2]+'">'+g[0]+' · '+g[1].length+'</div>'+g[1].map(taskRow).join('')).join(''):'<div class="empty"><b>Sve je urađeno</b>Nema otvorenih obaveza.</div>')+
+      (dn.length?'<div class="sub-h">Završeno <button class="btn ghost sm danger" data-a="clearDone" style="margin-left:8px">Obriši završene</button></div>'+dn.map(taskRow).join(''):'')+'</div>';
+  }
+  return o;
+};
+
+VIEWS.faks=()=>{
+  if(ui.subject&&S.subjects.find(s=>s.id===ui.subject))return subjectDetail(S.subjects.find(s=>s.id===ui.subject));
+  ui.subject=null;
+  const passed=S.subjects.filter(s=>Number(s.grade)>=6);
+  const avg=passed.length?(passed.reduce((a,s)=>a+Number(s.grade),0)/passed.length).toFixed(2).replace('.',','):'–';
+  const espb=passed.reduce((a,s)=>a+(Number(s.espb)||0),0);
+  const wk=studyWeek(),wkMin=wk.reduce((a,b)=>a+b.min,0),mx=Math.max(60,...wk.map(x=>x.min));
+  const t=TODAY();
+  let o=head('Faks','Predmeti, ispiti i učenje');
+  o+='<div class="stats3 c-violet"><div class="tile c-violet"><div class="k">Prosek</div><div class="v">'+avg+'</div></div><div class="tile c-violet"><div class="k">Položeno</div><div class="v">'+espb+' <small>ESPB</small></div></div><div class="tile c-violet"><div class="k">Učenje, nedelja</div><div class="v" style="font-size:20px;margin-top:8px">'+fmtMin(wkMin)+'</div></div></div>';
+  o+='<div class="grid2"><div>'+timerCard()+'</div><div><div class="card c-violet"><h2>Učenje po danima</h2><div class="bars">'+wk.map((x,i)=>'<div class="'+(x.min?'':'z ')+(x.d===t?'td':'')+'"><span>'+(x.min?x.min:'')+'</span><i style="height:'+Math.round(x.min/mx*74)+'px"></i><b style="font-weight:700">'+DAYS3[i]+'</b></div>').join('')+'</div></div></div></div>';
+  o+='<div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0 12px"><h2 class="disp" style="font-size:22px">Predmeti</h2><button class="btn primary c-violet sm" data-a="addSubject">+ Predmet</button></div>';
+  if(!S.subjects.length)o+='<div class="card"><div class="empty"><b>Još nema predmeta</b>Dodaj predmet, razbij ga na lekcije i prati napredak ka ispitu.</div></div>';
+  else o+='<div class="subjects">'+S.subjects.map(s=>{
+    const n=s.topics.length,dn=s.topics.filter(x=>x.done).length,p=n?Math.round(dn/n*100):0;
+    let ex='bez datuma ispita';
+    if(s.grade)ex='Ocena '+s.grade;
+    else if(s.exam){const k=diffDays(s.exam,t);ex=k<0?'ispit je prošao':k===0?'ispit je danas':'ispit za '+k+' d';}
+    return '<button class="subj" style="--accent:'+s.color+'" data-a="openSubject" data-id="'+s.id+'"><div class="subj-top"><b>'+sn(s)+'</b><span class="muted">'+(s.espb||0)+' ESPB</span></div>'+bar(p)+'<div class="subj-meta"><span>'+(n?dn+'/'+n+' lekcija':'nema lekcija')+'</span><span>'+ex+'</span></div>'+kolLine(s,t)+'</button>';
+  }).join('')+'</div>';
+  return o;
+};
+function hasPts(k){return k.pts!==''&&k.pts!=null;}
+function kolLine(s,t){
+  const ks=s.kols||[];if(!ks.length)return '';
+  const dn=ks.filter(k=>k.status==='passed').length;
+  const nx=ks.filter(k=>k.status==='pending'&&k.date&&k.date>=t).sort((a,b)=>a.date.localeCompare(b.date))[0];
+  return '<div class="subj-meta"><span>Kolokvijumi: '+dn+'/'+ks.length+' položeno</span><span>'+(nx?'sledeći '+fmtShort(nx.date):'')+'</span></div>';
+}
+function kolRow(k){
+  const t=TODAY();
+  let when='bez datuma';
+  if(k.date){const d=diffDays(k.date,t);when=fmtShort(k.date)+(k.status==='pending'?(d>0?' · za '+d+' d':d===0?' · danas':' · prošao'):'');}
+  const badge=k.status==='passed'?'<span class="badge" style="--accent:var(--green);--accent-t:var(--green-t)">Položen</span>':
+    k.status==='failed'?'<span class="badge late">Nije položen</span>':
+    (k.date&&k.date<t?'<span class="badge today">Upiši ishod</span>':'<span class="badge">Predstoji</span>');
+  const mx=Number(k.max)||0;
+  const pts=hasPts(k)?'<b class="amt">'+fmtN(Number(k.pts))+(mx>0?' / '+fmtN(mx):'')+'</b>':(mx>0?'<span class="muted" style="white-space:nowrap">max '+fmtN(mx)+'</span>':'');
+  return '<button class="tx" data-a="editKol" data-id="'+k.id+'"><div class="tx-main"><b>'+esc(k.title)+'</b><small>'+when+'</small></div>'+badge+pts+'</button>';
+}
+function kolCard(s){
+  const ks=(s.kols||[]).slice().sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
+  const dn=ks.filter(k=>k.status==='passed').length;
+  const sc=ks.filter(hasPts);
+  const got=sc.reduce((a,k)=>a+Number(k.pts),0),mx=sc.reduce((a,k)=>a+(Number(k.max)||0),0);
+  const allMax=sc.length>0&&sc.every(k=>Number(k.max)>0);
+  return '<div class="card"><h2>Kolokvijumi <button class="btn primary sm" data-a="addKol">+ Dodaj</button></h2>'+
+    (ks.length?'<div class="muted" style="margin:-4px 0 8px">Položeno '+dn+' od '+ks.length+(sc.length?' · ukupno '+fmtN(got)+(allMax?' / '+fmtN(mx):'')+' bodova':'')+'</div>'+ks.map(kolRow).join(''):
+      '<div class="empty-s">Dodaj kolokvijume sa datumima, pa upiši da li si ih položio i sa koliko bodova.</div>')+'</div>';
+}
+function subjectDetail(s){
+  const n=s.topics.length,dn=s.topics.filter(x=>x.done).length,p=n?Math.round(dn/n*100):0,t=TODAY();
+  const log=S.study.filter(x=>x.sid===s.id),min=log.reduce((a,b)=>a+b.min,0);
+  let ex='Datum ispita nije postavljen';
+  if(s.grade)ex='Položeno, ocena '+s.grade;
+  else if(s.exam){const k=diffDays(s.exam,t);ex=(k<0?'Ispit je bio ':'Ispit: ')+fmtShort(s.exam)+(k>0?' · još '+k+' d':k===0?' · danas':'');}
+  return head(sn(s),ex)+'<button class="back" data-a="backSubject">'+ic('back',18)+' Svi predmeti</button>'+
+    '<div class="grid2" style="--accent:'+s.color+'"><div><div class="card"><h2>Napredak <small>'+dn+'/'+n+' · '+p+'%</small></h2>'+bar(p).replace('class="bar"','class="bar tall"')+
+    '<div class="kv" style="margin-top:14px"><div><b>'+fmtMin(min)+'</b><span>ukupno učenja</span></div><div><b>'+log.length+'</b><span>sesija</span></div><div><b>'+(s.espb||0)+'</b><span>ESPB</span></div></div>'+
+    '<button class="btn sm" data-a="editSubject" data-id="'+s.id+'">Izmeni predmet</button></div>'+kolCard(s)+'</div>'+
+    '<div><div class="card"><h2>Lekcije</h2>'+(n?s.topics.map(x=>'<div class="row '+(x.done?'done':'')+'"><button class="check" aria-pressed="'+!!x.done+'" aria-label="Označi: '+esc(x.title)+'" data-a="toggleTopic" data-id="'+x.id+'"></button><div class="row-main"><span class="t">'+esc(x.title)+'</span></div><button class="icon-btn sm" data-a="delTopic" data-id="'+x.id+'" aria-label="Ukloni lekciju">'+ic('x',16)+'</button></div>').join(''):'<div class="empty-s">Dodaj lekcije da pratiš napredak.</div>')+
+    '<label class="fl" style="margin-top:14px"><span>Nove lekcije (jedna po liniji)</span><textarea id="nt-topics" rows="3" placeholder="Poglavlje 1\nPoglavlje 2"></textarea></label><button class="btn primary" data-a="addTopics">Dodaj lekcije</button></div></div></div>';
+}
+
+/* study timer */
+const T={sid:'',total:25,state:'idle',endsAt:0,left:0};
+let tickId=null;
+const timerRem=()=>T.state==='run'?Math.max(0,T.endsAt-Date.now()):T.state==='pause'?T.left:T.total*60000;
+const clock=ms=>{const s=Math.ceil(ms/1000);return pad(Math.floor(s/60))+':'+pad(s%60);};
+function timerCard(){
+  if(!S.subjects.length)return '<div class="card c-violet"><h2>Fokus</h2><p class="muted" style="margin:0">Dodaj predmet pa pokreni tajmer za učenje.</p></div>';
+  if(!S.subjects.find(s=>s.id===T.sid))T.sid=S.subjects[0].id;
+  const idle=T.state==='idle';
+  return '<div class="card c-violet"><h2>Fokus</h2><div class="timer"><select data-ch="timerSubj" aria-label="Predmet"'+(idle?'':' disabled')+'>'+S.subjects.map(s=>'<option value="'+s.id+'"'+(s.id===T.sid?' selected':'')+'>'+esc(s.name)+'</option>').join('')+'</select>'+
+    '<div class="timer-t" id="tt" aria-live="off">'+clock(timerRem())+'</div>'+
+    '<div class="timer-r">'+[25,45,60].map(m=>'<button class="pre '+(T.total===m?'on':'')+'" data-a="tPreset" data-v="'+m+'"'+(idle?'':' disabled')+'>'+m+' min</button>').join('')+'</div>'+
+    '<div class="timer-r">'+(T.state==='run'?'<button class="btn primary" data-a="tPause">'+ic('pause',18)+' Pauza</button>':'<button class="btn primary" data-a="tStart">'+ic('play',18)+' '+(T.state==='pause'?'Nastavi':'Pokreni')+'</button>')+(idle?'':'<button class="btn" data-a="tStop">Završi i sačuvaj</button>')+'</div></div></div>';
+}
+function tick(){
+  if(T.state!=='run')return;
+  const rem=T.endsAt-Date.now();
+  if(rem<=0){completeTimer();return;}
+  const el=$('#tt');if(el)el.textContent=clock(rem);
+}
+function logStudy(sid,min){S.study.push({id:uid(),sid:sid,date:TODAY(),min:min,at:Date.now()});}
+function completeTimer(){
+  const L0=stats().level;
+  logStudy(T.sid,T.total);
+  const m=T.total;T.state='idle';clearInterval(tickId);tickId=null;
+  if(navigator.vibrate)try{navigator.vibrate([200,100,200]);}catch(e){}
+  commit();xpToast(L0,'Sesija završena: '+m+' min · +'+Math.floor(m/5)*2+' XP');
+}
+
+VIEWS.gym=()=>{
+  let o=head('Teretana','Treninzi, planovi i progres');
+  o+=seg('gym',[['trening','Trening'],['planovi','Planovi'],['progres','Progres']]);
+  o+='<div class="c-orange">';
+  if(ui.sub.gym==='trening')o+=gymTrain();
+  else if(ui.sub.gym==='planovi')o+=gymPlans();
+  else o+=gymProgress();
+  return o+'</div>';
+};
+function gymTrain(){
+  const st=stats(),goal=Number(S.settings.gym)||3;
+  let o='<div class="card"><h2>Ova nedelja <small>'+st.wk+' od '+goal+'</small></h2><div class="dots">'+Array.from({length:Math.max(goal,st.wk)},(_,i)=>'<i class="'+(i<st.wk?'on':'')+'"></i>').join('')+'</div></div>';
+  if(!S.draft){
+    o+='<div class="card"><h2>Počni trening</h2>'+(S.plans.length?'<div class="plans">'+S.plans.map(p=>'<button class="plan-b" data-a="startPlan" data-id="'+p.id+'">'+esc(p.name)+'<small>'+p.exercises.length+' vežbi</small></button>').join('')+'</div>':'<div class="empty-s">Prvo napravi plan u tabu Planovi.</div>')+
+      '<div style="margin-top:12px"><button class="btn" data-a="startEmpty">Prazan trening</button></div></div>';
+  }else{
+    o+='<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div><b class="disp" style="font-size:20px">'+esc(S.draft.planName)+'</b><div class="muted">Trening je u toku</div></div><button class="btn ghost danger sm" data-a="cancelWorkout">Odustani</button></div>';
+    o+=S.draft.entries.map((e,i)=>'<div class="card"><div class="ex-h"><b>'+esc(e.name)+'</b>'+(e.target?'<span class="badge">'+esc(e.target)+'</span>':'')+'<button class="icon-btn sm" data-a="delEx" data-e="'+i+'" aria-label="Ukloni vežbu">'+ic('x',16)+'</button></div>'+
+      '<div class="sets"><div class="sets-h"><span style="text-align:center">Serija</span><span style="text-align:center">kg</span><span style="text-align:center">Ponavljanja</span><span></span></div>'+
+      e.sets.map((s,j)=>'<div class="set"><span class="sn">'+(j+1)+'</span><input inputmode="decimal" data-set="'+i+':'+j+':kg" value="'+esc(s.kg)+'" placeholder="0" aria-label="Kilogrami, serija '+(j+1)+'"><input inputmode="numeric" data-set="'+i+':'+j+':reps" value="'+esc(s.reps)+'" placeholder="'+esc((e.target||'').split('×')[1]||'0')+'" aria-label="Ponavljanja, serija '+(j+1)+'"><button class="icon-btn sm" data-a="delSet" data-e="'+i+'" data-s="'+j+'" aria-label="Ukloni seriju">'+ic('x',14)+'</button></div>').join('')+'</div>'+
+      '<button class="btn sm" data-a="addSet" data-e="'+i+'">+ Serija</button></div>').join('');
+    o+='<div class="card"><div class="addrow" style="margin-top:0"><input type="text" id="nex" placeholder="Dodaj vežbu" data-enter="addEx" aria-label="Nova vežba"><button class="btn" data-a="addEx">Dodaj</button></div></div>';
+    o+='<button class="btn primary block" style="margin-top:14px;padding:15px" data-a="finishWorkout">Završi trening</button>';
+  }
+  const hs=S.sessions.slice(-6).reverse();
+  o+='<div class="card"><h2>Poslednji treninzi</h2>'+(hs.length?hs.map(s=>{const vol=s.entries.reduce((a,e)=>a+e.sets.reduce((b,x)=>b+x.kg*x.reps,0),0);return '<div class="hist"><div><b>'+esc(s.planName)+'</b><small>'+fmtLong(s.date)+' · '+s.entries.length+' vežbi'+(vol?' · '+Math.round(vol)+' kg ukupno':'')+'</small></div><button class="icon-btn sm" data-a="delSession" data-id="'+s.id+'" aria-label="Obriši trening">'+ic('x',16)+'</button></div>';}).join(''):'<div class="empty-s">Još nema upisanih treninga.</div>')+'</div>';
+  return o;
+}
+function gymPlans(){
+  let o='<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn primary sm" data-a="addPlan">+ Novi plan</button></div>';
+  if(!S.plans.length)return o+'<div class="card"><div class="empty"><b>Nema planova</b>Napravi plan (npr. Push, Pull, Noge) i biraj ga kad kreneš na trening.</div></div>';
+  return o+'<div class="subjects">'+S.plans.map(p=>'<div class="card" style="margin:0"><h2>'+esc(p.name)+'</h2><ul class="plan-ex">'+p.exercises.map(e=>'<li>'+esc(e.name)+'<span>'+e.sets+'×'+esc(e.reps)+'</span></li>').join('')+'</ul><button class="btn sm" data-a="editPlan" data-id="'+p.id+'">Izmeni</button></div>').join('')+'</div>';
+}
+function gymProgress(){
+  const t=TODAY();
+  const bw=S.body.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const last=bw[bw.length-1],first=bw[0];
+  let o='<div class="grid2"><div><div class="card"><h2>Telesna težina</h2>'+
+    (bw.length?'<div class="kv"><div><b>'+fmtN(last.kg)+' kg</b><span>poslednji unos</span></div>'+(bw.length>1?'<div><b>'+(last.kg-first.kg>0?'+':'')+fmtN(Math.round((last.kg-first.kg)*10)/10)+' kg</b><span>od prvog unosa</span></div>':'')+'</div>':'')+
+    lineChart(bw.map(x=>({x:x.date,y:x.kg})))+
+    '<div class="addrow"><input type="text" inputmode="decimal" id="bwk" placeholder="kg" data-enter="addBody" aria-label="Težina u kilogramima" style="flex:0 1 110px"><input type="date" id="bwd" value="'+t+'" aria-label="Datum"><button class="btn primary" data-a="addBody">Upiši</button></div>'+
+    (bw.length?'<div style="margin-top:8px">'+bw.slice(-4).reverse().map(x=>'<div class="hist"><span>'+fmtLong(x.date)+'</span><span style="display:flex;align-items:center;gap:6px"><b>'+fmtN(x.kg)+' kg</b><button class="icon-btn sm" data-a="delBody" data-id="'+x.id+'" aria-label="Obriši unos">'+ic('x',14)+'</button></span></div>').join('')+'</div>':'')+'</div>';
+  const wkc=[];const ws=weekStart(t);
+  for(let i=7;i>=0;i--){const a=addDays(ws,-7*i),b=addDays(a,6);wkc.push({d:a,n:S.sessions.filter(x=>x.date>=a&&x.date<=b).length});}
+  const mx=Math.max(Number(S.settings.gym)||3,...wkc.map(x=>x.n));
+  o+='<div class="card"><h2>Treninga po nedeljama <small>cilj '+S.settings.gym+'</small></h2><div class="bars">'+wkc.map(x=>'<div class="'+(x.n?'':'z')+'"><span>'+(x.n||'')+'</span><i style="height:'+Math.round(x.n/mx*74)+'px"></i><b style="font-weight:600">'+parse(x.d).getDate()+'.'+(parse(x.d).getMonth()+1)+'</b></div>').join('')+'</div></div></div>';
+  const cnt={};S.sessions.forEach(s=>s.entries.forEach(e=>{cnt[e.name]=(cnt[e.name]||0)+1;}));
+  const names=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+  if(!names.includes(ui.exSel))ui.exSel=names[0]||'';
+  o+='<div><div class="card"><h2>Napredak po vežbi</h2>';
+  if(!names.length)o+='<div class="empty-s">Završi bar jedan trening pa se ovde pojavljuje grafikon.</div>';
+  else{
+    const rows=S.sessions.filter(s=>s.entries.some(e=>e.name===ui.exSel)).map(s=>{const e=s.entries.find(x=>x.name===ui.exSel);return {x:s.date,kg:Math.max.apply(null,e.sets.map(z=>z.kg)),reps:Math.max.apply(null,e.sets.map(z=>z.reps))};});
+    const useReps=rows.every(r=>r.kg===0);
+    const pts=rows.map(r=>({x:r.x,y:useReps?r.reps:r.kg}));
+    const pr=Math.max.apply(null,pts.map(p=>p.y));
+    o+='<select data-ch="exSel" aria-label="Vežba" style="margin-bottom:12px">'+names.map(n=>'<option value="'+esc(n)+'"'+(n===ui.exSel?' selected':'')+'>'+esc(n)+'</option>').join('')+'</select>'+
+      '<div class="kv"><div><b>'+fmtN(pr)+(useReps?'':' kg')+'</b><span>lični rekord'+(useReps?' (ponavljanja)':'')+'</span></div><div><b>'+pts.length+'</b><span>treninga</span></div></div>'+lineChart(pts);
+  }
+  return o+'</div></div></div>';
+}
+
+/* ---------- budzet ---------- */
+const monthAdd=(k,n)=>{const a=k.split('-').map(Number);const d=new Date(a[0],a[1]-1+n,1);return d.getFullYear()+'-'+pad(d.getMonth()+1);};
+const monthLabel=k=>{const a=k.split('-').map(Number);const m=MONTHS[a[1]-1];return m.charAt(0).toUpperCase()+m.slice(1)+' '+a[0];};
+const money=n=>{const r=Math.round(n);return (r<0?'−':'')+String(Math.abs(r)).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' '+(S.settings.currency||'RSD');};
+const shortMoney=v=>v>=1000?(v/1000).toFixed(v>=10000?0:1).replace('.',',')+'k':String(Math.round(v));
+const catName=id=>{const c=S.budget.cats.find(x=>x.id===id);return c?c.name:'Bez kategorije';};
+function monthStats(k){
+  const tx=S.tx.filter(x=>x.date.slice(0,7)===k);
+  const sum=t=>tx.filter(x=>x.type===t).reduce((a,b)=>a+b.amount,0);
+  const byCat={};
+  tx.filter(x=>x.type==='out').forEach(x=>{byCat[x.cat||'']=(byCat[x.cat||'']||0)+x.amount;});
+  const limit=S.budget.monthly>0?S.budget.monthly:S.budget.cats.reduce((a,c)=>a+(Number(c.limit)||0),0);
+  const inc=sum('in'),out=sum('out'),sav=sum('save');
+  return {tx:tx,inc:inc,out:out,sav:sav,bal:inc-out-sav,byCat:byCat,limit:limit};
+}
+function daysLeft(){const t=TODAY();const dim=new Date(Number(t.slice(0,4)),Number(t.slice(5,7)),0).getDate();return dim-Number(t.slice(8,10))+1;}
+function budgetCard(){
+  const t=TODAY(),ms=monthStats(t.slice(0,7));
+  const today=S.tx.filter(x=>x.date===t&&x.type==='out').reduce((a,b)=>a+b.amount,0);
+  const rem=ms.limit-ms.out;
+  const line=ms.limit>0?(rem>=0?'Ostalo '+money(rem)+' · oko '+money(rem/daysLeft())+' dnevno':'Prekoračeno za '+money(-rem)):'Potrošeno ovog meseca: '+money(ms.out);
+  return '<div class="card c-teal"><h2>Budžet <small>danas '+money(today)+'</small></h2><p style="margin:0 0 12px">'+line+'</p>'+
+    (ms.limit>0?bar(ms.out/ms.limit*100).replace('class="bar"','class="bar'+(rem<0?' over':'')+'"'):'')+
+    '<div style="margin-top:12px"><button class="btn primary sm" data-a="addTx" data-t="out">+ Rashod</button></div></div>';
+}
+VIEWS.budzet=()=>{
+  const k=ui.bMonth,ms=monthStats(k),t=TODAY(),cur=k===t.slice(0,7),rem=ms.limit-ms.out;
+  let o=head('Budžet','Prihodi, troškovi i štednja');
+  o+='<div class="dnav"><button class="icon-btn" data-a="bPrev" aria-label="Prethodni mesec">'+ic('back')+'</button><b>'+monthLabel(k)+'</b><button class="icon-btn" data-a="bNext" aria-label="Sledeći mesec"'+(cur?' disabled':'')+'>'+ic('fwd')+'</button></div>';
+  o+='<div class="tiles"><div class="tile c-green"><div class="k">Prihod</div><div class="v sm">'+money(ms.inc)+'</div></div>'+
+    '<div class="tile c-pink"><div class="k">Potrošeno</div><div class="v sm">'+money(ms.out)+'</div></div>'+
+    '<div class="tile c-teal"><div class="k">Stanje</div><div class="v sm">'+money(ms.bal)+'</div>'+(ms.sav?'<div class="s">štednja '+money(ms.sav)+'</div>':'')+'</div></div>';
+  o+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button class="btn primary" data-a="addTx" data-t="out">+ Rashod</button><button class="btn" data-a="addTx" data-t="in">+ Prihod</button><button class="btn" data-a="addTx" data-t="save">+ Štednja</button></div>';
+  /* left column */
+  let L='<div class="card"><h2>Mesečni limit <button class="btn ghost sm" data-a="setLimit">'+(S.budget.monthly>0?'Izmeni':'Postavi')+'</button></h2>';
+  if(ms.limit>0){
+    L+=bar(ms.out/ms.limit*100).replace('class="bar"','class="bar tall'+(rem<0?' over':'')+'"')+'<div class="muted" style="margin-top:8px">'+money(ms.out)+' od '+money(ms.limit)+(S.budget.monthly>0?'':' (zbir limita po kategorijama)')+'</div>'+
+      '<div style="margin-top:4px;font-weight:700">'+(rem>=0?'Ostalo '+money(rem)+(cur?' · oko '+money(rem/daysLeft())+' dnevno':''):'Prekoračeno za '+money(-rem))+'</div>';
+  }else L+='<p class="muted" style="margin:0">Postavi koliko mesečno možeš da potrošiš i dobijaš koliko sme dnevno do kraja meseca.</p>';
+  L+='</div>';
+  const rows=S.budget.cats.map(c=>({c:c,sp:ms.byCat[c.id]||0}));
+  const unc=ms.byCat['']||0;
+  const catRow=(name,sp,lim,id)=>{
+    const pct=lim>0?sp/lim*100:(ms.out?sp/ms.out*100:0);
+    return '<button class="catrow" '+(id?'data-a="editCat" data-id="'+id+'"':'disabled')+'><div class="ch"><b>'+esc(name)+'</b><span>'+money(sp)+(lim>0?' / '+money(lim):'')+'</span></div>'+bar(pct).replace('class="bar"','class="bar'+(lim>0&&sp>lim?' over':'')+'"')+'</button>';
+  };
+  L+='<div class="card"><h2>Kategorije <button class="btn ghost sm" data-a="addCat">+ Dodaj</button></h2>'+
+    (rows.length?rows.map(r=>catRow(r.c.name,r.sp,Number(r.c.limit)||0,r.c.id)).join(''):'<div class="empty-s">Dodaj kategorije troškova.</div>')+(unc>0?catRow('Bez kategorije',unc,0,''):'')+'</div>';
+  const saved=S.tx.filter(x=>x.type==='save').reduce((a,b)=>a+b.amount,0),g=S.budget.goal;
+  L+='<div class="card"><h2>Štednja <button class="btn ghost sm" data-a="editSavings">'+(g.target>0?'Izmeni cilj':'Postavi cilj')+'</button></h2>'+
+    (g.target>0?'<div class="kv"><div><b>'+money(saved)+'</b><span>'+(g.name?esc(g.name):'ušteđeno')+'</span></div><div><b>'+Math.min(100,Math.round(saved/g.target*100))+'%</b><span>od '+money(g.target)+'</span></div></div>'+bar(saved/g.target*100):
+      '<div class="kv"><div><b>'+money(saved)+'</b><span>ukupno ušteđeno</span></div></div><p class="muted" style="margin:6px 0 0">Postavi cilj (npr. putovanje) da vidiš napredak.</p>')+
+    '<div style="margin-top:12px"><button class="btn sm" data-a="addTx" data-t="save">+ Uplati</button></div></div>';
+  /* right column */
+  const list=ms.tx.slice().sort((a,b)=>b.date.localeCompare(a.date)||(b.at||0)-(a.at||0));
+  let R='<div class="card"><h2>Transakcije <small>'+list.length+'</small></h2>'+(list.length?list.map(x=>{
+    const sign=x.type==='out'?'−':x.type==='in'?'+':'';
+    const dot=x.type==='out'?catName(x.cat).charAt(0).toUpperCase():x.type==='in'?'+':'★';
+    const sub=fmtShort(x.date)+(x.type==='out'?' · '+esc(catName(x.cat)):x.type==='in'?' · prihod':' · štednja');
+    return '<button class="tx" data-a="editTx" data-id="'+x.id+'"><span class="dot">'+esc(dot)+'</span><div class="tx-main"><b>'+esc(x.note||(x.type==='out'?catName(x.cat):x.type==='in'?'Prihod':'Uplata u štednju'))+'</b><small>'+sub+'</small></div><span class="amt '+x.type+'">'+sign+money(x.amount)+'</span></button>';
+  }).join(''):'<div class="empty"><b>Nema unosa za ovaj mesec</b>Dodaj prvi rashod ili prihod.</div>')+'</div>';
+  const mon=[];for(let i=5;i>=0;i--)mon.push(monthAdd(t.slice(0,7),-i));
+  const vals=mon.map(m=>({m:m,v:monthStats(m).out}));
+  const mx=Math.max(1,...vals.map(x=>x.v));
+  R+='<div class="card"><h2>Potrošnja po mesecima</h2><div class="bars">'+vals.map(x=>'<div class="'+(x.v?'':'z ')+(x.m===k?'td':'')+'"><span>'+(x.v?shortMoney(x.v):'')+'</span><i style="height:'+Math.round(x.v/mx*74)+'px"></i><b style="font-weight:700">'+MONTHS[Number(x.m.slice(5,7))-1].slice(0,3)+'</b></div>').join('')+'</div></div>';
+  return o+'<div class="grid2"><div>'+L+'</div><div>'+R+'</div></div>';
+};
+
+VIEWS.ja=()=>{
+  let o=head('Dnevnik','Dani, ciljevi, navike i zabava');
+  o+=seg('ja',[['dnevnik','Dnevnik'],['ciljevi','Ciljevi'],['navike','Navike'],['zabava','Zabava']]);
+  o+='<div class="c-green">';
+  if(ui.sub.ja==='dnevnik')o+=jaDiary();
+  else if(ui.sub.ja==='ciljevi')o+=jaGoals();
+  else if(ui.sub.ja==='zabava')o+=jaMedia();
+  else o+=jaHabits();
+  return o+'</div>';
+};
+function jaDiary(){
+  const t=TODAY(),d=ui.jDate,j=S.journal[d]||{};
+  let o='<div class="grid2"><div><div class="card"><div class="dnav"><button class="icon-btn" data-a="jPrev" aria-label="Prethodni dan">'+ic('back')+'</button><b>'+(d===t?'Danas · ':'')+fmtLong(d)+'</b><button class="icon-btn" data-a="jNext" aria-label="Sledeći dan"'+(d>=t?' disabled':'')+'>'+ic('fwd')+'</button></div>'+
+    '<div class="moods" style="margin-bottom:14px">'+MOODS.map((m,i)=>'<button class="mood '+(j.mood===i+1?'on':'')+'" aria-pressed="'+(j.mood===i+1)+'" data-a="setMood" data-v="'+(i+1)+'">'+m[0]+'<small>'+m[1]+'</small></button>').join('')+'</div>'+
+    '<label class="fl"><span>Kako je prošao dan?</span><textarea id="jt" rows="7" placeholder="Piši šta god ti padne na pamet…">'+esc(j.text||'')+'</textarea></label>'+
+    '<label class="fl"><span>Jedna dobra stvar danas</span><input type="text" id="jg" value="'+esc(j.good||'')+'" placeholder="Makar sitnica"></label>'+
+    (d!==t?'<button class="btn sm" data-a="jToday">Nazad na danas</button>':'')+'</div></div>';
+  const list=Object.keys(S.journal).filter(k=>{const e=S.journal[k];return e.mood||(e.text||'').trim()||(e.good||'').trim();}).sort().reverse().slice(0,30);
+  o+='<div><div class="card"><h2>Prethodni unosi <small>'+list.length+'</small></h2>'+(list.length?list.map(k=>{const e=S.journal[k];return '<button class="entry" data-a="openDay" data-d="'+k+'"><b>'+(e.mood?MOODS[e.mood-1][0]:'')+' '+fmtLong(k)+'</b><p>'+esc((e.text||e.good||'').trim()||'Samo raspoloženje')+'</p></button>';}).join(''):'<div class="empty-s">Prvi unos čeka. Dovoljna je jedna rečenica.</div>')+'</div></div></div>';
+  return o;
+}
+function jaGoals(){
+  let o='<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn primary sm" data-a="addGoal">+ Novi cilj</button></div>';
+  if(!S.goals.length)return o+'<div class="card"><div class="empty"><b>Još nema ciljeva</b>Postavi cilj i razbij ga na korake. Svaki završen korak vredi XP.</div></div>';
+  return o+'<div class="subjects">'+S.goals.map(g=>{
+    const n=g.milestones.length,dn=g.milestones.filter(x=>x.done).length,p=n?Math.round(dn/n*100):0;
+    return '<div class="card" style="margin:0"><div class="goal-h"><div><b>'+esc(g.title)+'</b><div class="muted" style="font-size:13px;margin-top:2px">'+esc(g.cat||'Lično')+(g.target?' · do '+fmtShort(g.target):'')+'</div></div><button class="icon-btn sm" data-a="editGoal" data-id="'+g.id+'" aria-label="Izmeni cilj">'+ic('gear',18)+'</button></div>'+
+      bar(p)+'<div class="muted" style="font-size:13px;margin:6px 0 8px">'+(n&&dn===n?'Ostvareno 🎉':dn+' od '+n+' koraka')+'</div>'+
+      g.milestones.map(m=>'<div class="row '+(m.done?'done':'')+'"><button class="check" aria-pressed="'+!!m.done+'" aria-label="Označi: '+esc(m.title)+'" data-a="toggleMs" data-g="'+g.id+'" data-id="'+m.id+'"></button><div class="row-main"><span class="t">'+esc(m.title)+'</span></div><button class="icon-btn sm" data-a="delMs" data-g="'+g.id+'" data-id="'+m.id+'" aria-label="Ukloni korak">'+ic('x',14)+'</button></div>').join('')+
+      '<div class="addrow"><input type="text" id="ms-'+g.id+'" data-enter="addMs" data-id="'+g.id+'" placeholder="Novi korak" aria-label="Novi korak"><button class="btn sm" data-a="addMs" data-id="'+g.id+'">Dodaj</button></div></div>';
+  }).join('')+'</div>';
+}
+function jaHabits(){
+  const t=TODAY(),days=[];for(let i=6;i>=0;i--)days.push(addDays(t,-i));
+  let o='<div class="card"><h2>Navike <small>poslednjih 7 dana</small></h2>';
+  if(S.habits.length){
+    o+='<div class="habit-grid"><span></span>'+days.map(d=>'<span class="hh">'+DAYS3[dow(d)]+'</span>').join('')+'<span></span>'+
+      S.habits.map(h=>'<span class="hn" data-a="editHabit" data-id="'+h.id+'">'+esc(h.name)+'</span>'+days.map(d=>{const on=(S.habitLog[d]||[]).includes(h.id);return '<button class="hc '+(on?'on':'')+'" aria-pressed="'+on+'" aria-label="'+esc(h.name)+', '+fmtLong(d)+'" data-a="toggleHabit" data-id="'+h.id+'" data-d="'+d+'"></button>';}).join('')+'<span class="hs">'+habitStreak(h.id)+'🔥</span>').join('')+'</div>';
+  }else o+='<div class="empty-s">Navike su male stvari koje ponavljaš svaki dan. Dodaj prvu.</div>';
+  o+='<div class="addrow"><input type="text" id="nh" placeholder="Nova navika" data-enter="addHabit" aria-label="Nova navika"><button class="btn primary" data-a="addHabit">Dodaj</button></div>';
+  const sug=QUICKHABITS.filter(q=>!S.habits.some(h=>h.name===q));
+  if(sug.length)o+='<div class="qchips">'+sug.map(q=>'<button class="pre" data-a="quickHabit" data-n="'+esc(q)+'">+ '+esc(q)+'</button>').join('')+'</div>';
+  return o+'</div>';
+}
+
+/* ---------- render ---------- */
+function render(){
+  const y=window.scrollY;
+  const nav=NAV.map(n=>'<button class="snav c-'+n[3]+(view===n[0]?' on':'')+'" data-a="go" data-v="'+n[0]+'"'+(view===n[0]?' aria-current="page"':'')+'>'+ic(n[2])+n[1]+'</button>').join('');
+  const st=stats();
+  $('#side').innerHTML='<div class="brand">moj<span>.</span>život</div>'+nav+'<div class="side-foot c-yellow"><b>Nivo '+st.level+' · '+esc(st.title)+'</b>'+bar(st.into/st.per*100)+'<span class="muted" style="font-size:12px">'+st.into+' / '+st.per+' XP</span></div>';
+  $('#tabbar').innerHTML=NAV.map(n=>'<button class="tab c-'+n[3]+(view===n[0]?' on':'')+'" data-a="go" data-v="'+n[0]+'"'+(view===n[0]?' aria-current="page"':'')+'>'+ic(n[2])+n[1]+'</button>').join('');
+  $('#view').innerHTML=VIEWS[view]();
+  $('#view').className='wrap c-'+NAV.find(n=>n[0]===view)[3];
+  window.scrollTo(0,y);
+  renderStatus();
+}
+function commit(){queueSave();render();}
+
+/* ---------- actions ---------- */
+const A={};
+const val=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
+
+A.go=el=>{view=el.dataset.v;ui.subject=null;render();window.scrollTo(0,0);};
+A.sub=el=>{ui.sub[el.dataset.k]=el.dataset.v;render();};
+A.goHabits=()=>{view='ja';ui.sub.ja='navike';render();window.scrollTo(0,0);};
+A.sheetClose=()=>closeSheet();
+A.sheetSave=()=>{const c=sheet;if(!c||!c.onSave)return;const r=c.onSave(collect());if(r!==false&&sheet===c)closeSheet();};
+A.sheetDelete=()=>{const c=sheet;closeSheet();if(c&&c.onDelete)c.onDelete();};
+
+/* tasks */
+A.toggleTask=el=>{
+  const x=S.tasks.find(t=>t.id===el.dataset.id);if(!x)return;
+  const L0=stats().level;
+  x.done=!x.done;x.doneAt=x.done?TODAY():'';
+  commit();if(x.done)xpToast(L0,'+10 XP');
+};
+A.quickTask=()=>{const v=val('qt');if(!v)return;S.tasks.push({id:uid(),title:v,due:TODAY(),prio:0,done:false,doneAt:''});commit();};
+A.addTask=()=>{const v=val('nt');if(!v)return;S.tasks.push({id:uid(),title:v,due:val('nd'),prio:0,done:false,doneAt:''});commit();};
+A.editTask=el=>{
+  const x=S.tasks.find(t=>t.id===el.dataset.id);if(!x)return;
+  openSheet({title:'Obaveza',color:'blue',fields:[{name:'title',label:'Naziv',value:x.title},{name:'due',label:'Rok',type:'date',value:x.due},{name:'prio',label:'Važnost',type:'select',value:x.prio,options:[[0,'Normalno'],[1,'Važno'],[2,'Hitno']]}],
+    onSave:v=>{if(!v.title.trim()){toast('Upiši naziv');return false;}x.title=v.title.trim();x.due=v.due;x.prio=Number(v.prio);commit();},
+    onDelete:()=>{S.tasks=S.tasks.filter(t=>t.id!==x.id);commit();}});
+};
+A.clearDone=()=>askConfirm('Obrisati sve završene obaveze? Osvojeni XP ostaje samo za one koje ostanu na listi.','Obriši',()=>{S.tasks=S.tasks.filter(t=>!t.done);commit();},'blue');
+
+/* ---------- kalendar, važni datumi, zabava ---------- */
+const p2=n=>String(n).padStart(2,'0');
+const KINDS={rodjendan:['🎂','Rođendan','#E8246F'],putovanje:['✈️','Putovanje','#0E7FA8'],uplata:['💳','Uplata','#B98500'],lekar:['🩺','Lekar','#078A62'],ostalo:['📌','Ostalo','#6B4B3A']};
+const REPEATS=[['once','Jednom'],['yearly','Svake godine'],['monthly','Svakog meseca']];
+const EMOJIS=['','📚','📐','🧮','📊','🧪','🔬','⚙️','🏗️','🧱','🧰','💻','🌍','💬','✍️','⚖️','🧠','💰','📈','🗺️','🔧','⚡','🎨','🎵','🏛️','📝','🔥','🎯'];
+const EMO_HINTS=[[/matem|algebr|analiz/i,'🧮'],[/statist|verovat/i,'📊'],[/fizik|mehanik/i,'⚡'],[/hemij/i,'🧪'],[/biolog/i,'🔬'],[/engl|nemac|francus|jezik/i,'💬'],[/programir|racun|informat|softver/i,'💻'],[/materijal|beton|gradj|konstrukc/i,'🧱'],[/ekonom|finans|racunovod/i,'💰'],[/prav|zakon/i,'⚖️'],[/psiholog|ličnost|licnost/i,'🧠'],[/istorij|filozof/i,'🏛️'],[/crtanj|dizajn|umetnost/i,'🎨']];
+function suggestEmoji(name){for(const h of EMO_HINTS)if(h[0].test(name||''))return h[1];return '📚';}
+const isLeap=y=>(y%4===0&&y%100!==0)||y%400===0;
+const lastDay=ds=>new Date(+ds.slice(0,4),+ds.slice(5,7),0).getDate();
+function occurs(d,ds){
+  if(!d||!d.date||ds<d.date)return false;
+  if(d.repeat==='yearly'){
+    const a=d.date.slice(5),b=ds.slice(5);
+    return a===b||(a==='02-29'&&b==='02-28'&&!isLeap(+ds.slice(0,4)));
+  }
+  if(d.repeat==='monthly')return +ds.slice(8)===Math.min(+d.date.slice(8),lastDay(ds));
+  return d.date===ds;
+}
+function upcomingDates(from,n){
+  const out=[];
+  for(let i=0;i<=n;i++){const ds=addDays(from,i);S.dates.forEach(d=>{if(occurs(d,ds))out.push({d:d,date:ds});});}
+  return out;
+}
+function ageTxt(d,ds,t){
+  if(d.kind!=='rodjendan'||d.repeat!=='yearly')return '';
+  const a=+ds.slice(0,4)-+d.date.slice(0,4);
+  return a>0?((ds>=t?'puni ':'napunio ')+a):'';
+}
+function dayEvents(ds){
+  const ev=[],t=TODAY();
+  S.dates.forEach(d=>{if(occurs(d,ds)){const k=KINDS[d.kind]||KINDS.ostalo,ag=ageTxt(d,ds,t);ev.push({c:k[2],t:k[0]+' '+esc(d.title),s:k[1]+(ag?' · '+ag:'')+(d.note?' · '+esc(d.note):''),a:'editDate',id:d.id});}});
+  S.subjects.forEach(sb=>{
+    if(sb.exam===ds)ev.push({c:sb.color,t:sn(sb),s:'Ispit'+(sb.grade?' · položen, ocena '+sb.grade:''),a:'openSubject',id:sb.id});
+    (sb.kols||[]).forEach(k=>{if(k.date===ds){const st=k.status==='passed'?'položen':k.status==='failed'?'nije položen':'predstoji';const pt=(k.pts!==''&&k.pts!=null)?' · '+fmtN(Number(k.pts))+(Number(k.max)>0?' / '+fmtN(Number(k.max)):'')+' bodova':'';ev.push({c:sb.color,t:sn(sb),s:esc(k.title)+' · '+st+pt,a:'openSubject',id:sb.id});}});
+  });
+  S.tasks.forEach(x=>{if(!x.done&&x.due===ds)ev.push({c:'#3B5BFF',t:esc(x.title),s:'Obaveza',a:'editTask',id:x.id});});
+  return ev;
+}
+function planMonth(){
+  const c=ui.cal,t=TODAY(),y=+c.m.slice(0,4),mo=+c.m.slice(5,7);
+  const off=(new Date(y,mo-1,1).getDay()+6)%7,days=new Date(y,mo,0).getDate();
+  let o='<div class="c-blue"><div class="card"><div class="cal-nav"><button class="icon-btn" data-a="calPrev" aria-label="Prethodni mesec">'+ic('back')+'</button><b>'+MONTHS[mo-1]+' '+y+'</b><button class="icon-btn" data-a="calNext" aria-label="Sledeći mesec">'+ic('fwd')+'</button></div>';
+  o+='<div class="cal-wd">'+DAYS3.map(n=>'<span>'+n+'</span>').join('')+'</div><div class="cal-grid">';
+  for(let i=0;i<off;i++)o+='<span></span>';
+  for(let d=1;d<=days;d++){
+    const ds=y+'-'+p2(mo)+'-'+p2(d),ev=dayEvents(ds);
+    o+='<button class="cal-d '+(ds===c.sel?'on ':'')+(ds===t?'today':'')+'" data-a="calSel" data-d="'+ds+'" aria-label="'+fmtLong(ds)+(ev.length?', događaja: '+ev.length:'')+'"><span>'+d+'</span><span class="dots">'+ev.slice(0,3).map(e=>'<i style="--c:'+e.c+'"></i>').join('')+'</span></button>';
+  }
+  o+='</div>'+(c.m!==t.slice(0,7)?'<div style="margin-top:10px"><button class="btn sm" data-a="calToday">Nazad na današnji mesec</button></div>':'')+'</div>';
+  const ev=dayEvents(c.sel),bl=S.blocks.filter(b=>b.day===dow(c.sel)).sort((a,b)=>a.start.localeCompare(b.start));
+  o+='<div class="card"><div class="cal-top"><h2 style="margin:0">'+(c.sel===t?'Danas · ':'')+fmtLong(c.sel)+'</h2><button class="btn primary sm" data-a="addDate" data-d="'+c.sel+'">+ Važan datum</button></div>';
+  o+=ev.map(e=>'<button class="cal-ev" style="--c:'+e.c+'" data-a="'+e.a+'" data-id="'+e.id+'"><span class="t">'+e.t+'</span><small>'+e.s+'</small></button>').join('');
+  o+=bl.map(b=>'<div class="cal-ev"><span class="t">'+esc(b.title)+'</span><small>Redovno · '+b.start+' – '+b.end+'</small></div>').join('');
+  if(!ev.length&&!bl.length)o+='<div class="empty-s">Ništa za ovaj dan.</div>';
+  return o+'</div></div>';
+}
+const shiftMonth=(m,n)=>{const d=new Date(+m.slice(0,4),+m.slice(5,7)-1+n,1);return d.getFullYear()+'-'+p2(d.getMonth()+1);};
+function calGo(m){const t=TODAY();ui.cal.m=m;ui.cal.sel=(m===t.slice(0,7))?t:m+'-01';render();}
+A.calPrev=()=>calGo(shiftMonth(ui.cal.m,-1));
+A.calNext=()=>calGo(shiftMonth(ui.cal.m,1));
+A.calToday=()=>calGo(TODAY().slice(0,7));
+A.calSel=el=>{ui.cal.sel=el.dataset.d;render();};
+A.openCal=el=>{view='plan';ui.sub.plan='mesec';ui.cal={m:el.dataset.d.slice(0,7),sel:el.dataset.d};render();window.scrollTo(0,0);};
+function dateSheet(d,pre){
+  const isNew=!d;d=d||{title:'',kind:'rodjendan',date:pre||TODAY(),repeat:'yearly',note:''};
+  openSheet({title:isNew?'Novi važan datum':'Važan datum',color:'pink',fields:[
+    {name:'title',label:'Naziv',value:d.title,placeholder:'npr. Markov rođendan'},
+    {name:'kind',label:'Vrsta',type:'select',ch:'kindSel',value:d.kind,options:Object.keys(KINDS).map(k=>[k,KINDS[k][0]+' '+KINDS[k][1]])},
+    {name:'date',label:'Datum (za rođendan upiši pravi datum rođenja)',type:'date',value:d.date},
+    {name:'repeat',label:'Ponavljanje',type:'select',value:d.repeat,options:REPEATS},
+    {name:'note',label:'Beleška (nije obavezno)',value:d.note||''}],
+    onSave:v=>{
+      if(!v.title.trim()){toast('Upiši naziv');return false;}
+      if(!v.date){toast('Izaberi datum');return false;}
+      const o={title:v.title.trim(),kind:v.kind,date:v.date,repeat:v.repeat,note:(v.note||'').trim()};
+      if(isNew){S.dates.push(Object.assign({id:uid()},o));ui.cal={m:o.date.slice(0,7),sel:o.date};}else Object.assign(d,o);
+      commit();},
+    onDelete:isNew?null:()=>{S.dates=S.dates.filter(x=>x.id!==d.id);commit();}});
+}
+A.addDate=el=>dateSheet(null,el.dataset.d);
+A.editDate=el=>{const d=S.dates.find(x=>x.id===el.dataset.id);if(d)dateSheet(d);};
+
+/* zabava */
+const MTYPES={film:['Film','#3B5BFF'],serija:['Serija','#8B3DFF'],knjiga:['Knjiga','#D94A06']};
+const mStatus=m=>m.status==='done'?(m.type==='knjiga'?'Pročitano':'Gledano'):m.status==='now'?(m.type==='knjiga'?'Čitam':'Gledam'):'Na listi';
+function starsHtml(n){let o='';for(let i=1;i<=5;i++)o+='<span class="'+(i<=n?'':'off')+'">★</span>';return '<div class="stars" aria-label="Ocena '+n+' od 5">'+o+'</div>';}
+function jaMedia(){
+  const f=ui.mF||'sve';
+  const cnt=t=>S.media.filter(m=>m.type===t&&m.status==='done').length;
+  let o='<div class="mstats">'+[['film','filmova'],['serija','serija'],['knjiga','knjiga']].map(x=>'<div style="--c:'+MTYPES[x[0]][1]+'"><b>'+cnt(x[0])+'</b><small>'+x[1]+'</small></div>').join('')+'</div>';
+  o+='<div class="chips">'+[['sve','Sve'],['film','Filmovi'],['serija','Serije'],['knjiga','Knjige']].map(c=>'<button class="chip '+(f===c[0]?'on':'')+'" data-a="mFilter" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'<button class="btn primary sm" style="margin-left:auto" data-a="addMedia">+ Dodaj</button></div>';
+  const list=S.media.filter(m=>f==='sve'||m.type===f).sort((a,b)=>(b.at||0)-(a.at||0));
+  if(!list.length)return o+'<div class="card"><div class="empty"><b>Još ništa nije uneto</b>Dodaj prvi film, seriju ili knjigu, sa ocenom i utiskom.</div></div>';
+  return o+list.map(m=>{
+    const col=SWATCH[(m.title||'').split('').reduce((a,ch)=>a+ch.charCodeAt(0),0)%SWATCH.length];
+    const cv=m.cover?'<div class="cover has" style="background-image:url('+m.cover+')"></div>':'<div class="cover" style="--cv:'+col+'">'+esc((m.title||'?').charAt(0).toUpperCase())+'</div>';
+    const T=MTYPES[m.type]||MTYPES.film;
+    return '<button class="mi" data-a="editMedia" data-id="'+m.id+'">'+cv+'<div class="mi-b"><div class="mi-t"><b>'+esc(m.title)+'</b><span class="badge" style="--accent:'+T[1]+';--accent-t:var(--surface2)">'+T[0]+'</span></div>'+
+      '<div class="mi-s">'+(m.year?m.year+' · ':'')+mStatus(m)+'</div>'+(m.rating>0?starsHtml(m.rating):'')+(m.review?'<div class="mi-r">'+esc(m.review)+'</div>':'')+'</div></button>';
+  }).join('');
+}
+function mediaSheet(m){
+  const isNew=!m;m=m||{title:'',type:ui.mF&&MTYPES[ui.mF]?ui.mF:'film',status:'done',year:'',rating:0,review:'',cover:''};
+  openSheet({title:isNew?'Novo':'Izmeni',color:'pink',fields:[
+    {name:'title',label:'Naziv',value:m.title},
+    {name:'type',label:'Vrsta',type:'select',value:m.type,options:Object.keys(MTYPES).map(k=>[k,MTYPES[k][0]])},
+    {name:'status',label:'Status',type:'select',value:m.status,options:[['done','Završeno (gledano / pročitano)'],['now','U toku'],['want','Na listi']]},
+    {name:'year',label:'Godina (nije obavezno)',type:'number',value:m.year,inputmode:'numeric'},
+    {name:'cover',label:'Naslovna slika',type:'cover',value:m.cover||''},
+    {name:'rating',label:'Ocena',type:'stars',value:m.rating},
+    {name:'review',label:'Utisak',type:'textarea',rows:4,value:m.review,placeholder:'Šta ti se svidelo, a šta nije?'}],
+    onSave:v=>{
+      if(!v.title.trim()){toast('Upiši naziv');return false;}
+      const o={title:v.title.trim(),type:v.type,status:v.status,year:Number(v.year)||'',rating:Number(v.rating)||0,review:(v.review||'').trim(),cover:v.cover||''};
+      if(isNew)S.media.push(Object.assign({id:uid(),at:Date.now()},o));else Object.assign(m,o);
+      commit();},
+    onDelete:isNew?null:()=>askConfirm('Obrisati "'+m.title+'"?','Obriši',()=>{S.media=S.media.filter(x=>x.id!==m.id);commit();},'pink')});
+}
+A.addMedia=()=>mediaSheet(null);
+A.editMedia=el=>{const m=S.media.find(x=>x.id===el.dataset.id);if(m)mediaSheet(m);};
+A.mFilter=el=>{ui.mF=el.dataset.v;render();};
+A.setStar=el=>{
+  const wrap=el.parentNode,hid=wrap.previousElementSibling;
+  const v=Number(el.dataset.v),nv=(Number(hid.value)===v)?0:v;hid.value=nv;
+  wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('on',Number(b.dataset.v)<=nv));
+};
+A.coverClear=()=>{const inp=$('#sheet [name=cover]'),pv=$('#cvprev');if(inp)inp.value='';if(pv){pv.style.backgroundImage='';pv.style.padding='6px';pv.textContent='Bez slike';}};
+
+/* blocks */
+function blockSheet(b,day){
+  const isNew=!b;b=b||{title:'',day:day,start:'09:00',end:'10:00',cat:'faks'};
+  openSheet({title:isNew?'Novi blok':'Blok',color:'blue',fields:[
+    {name:'title',label:'Naziv',value:b.title,placeholder:'npr. Predavanja'},
+    {name:'day',label:'Dan',type:'select',value:b.day,options:DAYS.map((n,i)=>[i,n])},
+    {name:'start',label:'Početak',type:'time',value:b.start},{name:'end',label:'Kraj',type:'time',value:b.end},
+    {name:'cat',label:'Vrsta',type:'select',value:b.cat,options:Object.keys(CATS).map(k=>[k,CATS[k][0]])}],
+    onSave:v=>{
+      if(!v.title.trim()){toast('Upiši naziv');return false;}
+      if(!v.start||!v.end||v.start>=v.end){toast('Kraj mora biti posle početka');return false;}
+      const o={title:v.title.trim(),day:Number(v.day),start:v.start,end:v.end,cat:v.cat};
+      if(isNew)S.blocks.push(Object.assign({id:uid()},o));else Object.assign(b,o);
+      ui.planDay=o.day;commit();},
+    onDelete:isNew?null:()=>{S.blocks=S.blocks.filter(x=>x.id!==b.id);commit();}});
+}
+A.addBlock=el=>blockSheet(null,Number(el.dataset.day));
+A.editBlock=el=>{const b=S.blocks.find(x=>x.id===el.dataset.id);if(b)blockSheet(b);};
+A.planDay=el=>{ui.planDay=Number(el.dataset.v);render();};
+
+/* faks */
+function subjectSheet(s){
+  const isNew=!s;s=s||{name:'',emoji:'',espb:6,exam:'',grade:'',color:SWATCH[0]};
+  openSheet({title:isNew?'Novi predmet':'Predmet',color:'violet',fields:[
+    {name:'name',label:'Naziv',value:s.name},
+    {name:'emoji',label:'Emodži',type:'emoji',value:s.emoji||''},
+    {name:'espb',label:'ESPB',type:'number',value:s.espb,inputmode:'numeric'},
+    {name:'exam',label:'Datum ispita',type:'date',value:s.exam},
+    {name:'grade',label:'Ocena (kad položiš)',type:'select',value:s.grade,options:[['','Još nije položen'],[5,'5 (pao)'],[6,'6'],[7,'7'],[8,'8'],[9,'9'],[10,'10']]},
+    {name:'color',label:'Boja',type:'swatch',value:s.color}],
+    onSave:v=>{
+      if(!v.name.trim()){toast('Upiši naziv');return false;}
+      const o={name:v.name.trim(),emoji:v.emoji||(isNew?suggestEmoji(v.name):''),espb:Number(v.espb)||0,exam:v.exam,grade:v.grade,color:v.color||SWATCH[0]};
+      if(isNew){const n=Object.assign({id:uid(),topics:[]},o);S.subjects.push(n);ui.subject=n.id;}else Object.assign(s,o);
+      commit();},
+    onDelete:isNew?null:()=>askConfirm('Obrisati predmet "'+s.name+'" sa svim lekcijama i zapisom učenja?','Obriši',()=>{S.subjects=S.subjects.filter(x=>x.id!==s.id);S.study=S.study.filter(x=>x.sid!==s.id);ui.subject=null;commit();},'violet')});
+}
+A.addSubject=()=>subjectSheet(null);
+A.editSubject=el=>{const s=S.subjects.find(x=>x.id===el.dataset.id);if(s)subjectSheet(s);};
+A.openSubject=el=>{view='faks';ui.subject=el.dataset.id;render();window.scrollTo(0,0);};
+A.backSubject=()=>{ui.subject=null;render();};
+A.addTopics=()=>{
+  const s=S.subjects.find(x=>x.id===ui.subject);if(!s)return;
+  const lines=($('#nt-topics').value||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!lines.length)return;
+  lines.forEach(l=>s.topics.push({id:uid(),title:l,done:false}));commit();
+};
+A.toggleTopic=el=>{
+  const s=S.subjects.find(x=>x.id===ui.subject);if(!s)return;
+  const x=s.topics.find(t=>t.id===el.dataset.id);if(!x)return;
+  const L0=stats().level;x.done=!x.done;commit();if(x.done)xpToast(L0,'+20 XP');
+};
+A.delTopic=el=>{const s=S.subjects.find(x=>x.id===ui.subject);if(!s)return;s.topics=s.topics.filter(t=>t.id!==el.dataset.id);commit();};
+function kolSheet(s,k){
+  const isNew=!k;
+  const b=k||{title:'',date:'',status:'pending',pts:'',max:0};
+  const fmt=v=>(v===''||v==null||v===0)?'':String(v).replace('.',',');
+  openSheet({title:isNew?'Novi kolokvijum':'Kolokvijum',color:'violet',fields:[
+    {name:'title',label:'Naziv',value:b.title,placeholder:'npr. I kolokvijum'},
+    {name:'date',label:'Datum',type:'date',value:b.date},
+    {name:'status',label:'Ishod',type:'select',value:b.status,options:[['pending','Predstoji'],['passed','Položen'],['failed','Nije položen']]},
+    {name:'pts',label:'Osvojeni bodovi (nije obavezno)',value:fmt(b.pts===0?'0':b.pts),inputmode:'decimal'},
+    {name:'max',label:'Maksimum bodova (nije obavezno)',value:fmt(b.max),inputmode:'decimal'}],
+    onSave:v=>{
+      if(!v.title.trim()){toast('Upiši naziv');return false;}
+      const hp=String(v.pts).trim()!=='';
+      const pts=hp?num(v.pts):'',mx=num(v.max);
+      if(hp&&(pts<0||pts>10000)){toast('Proveri bodove');return false;}
+      if(hp&&mx>0&&pts>mx){toast('Osvojeni bodovi ne mogu biti veći od maksimuma');return false;}
+      if(hp&&v.status==='pending'){toast('Izaberi ishod: položen ili nije položen');return false;}
+      const o={title:v.title.trim(),date:v.date,status:v.status,pts:pts,max:mx>0?mx:0};
+      const L0=stats().level,was=!isNew&&k.status==='passed';
+      s.kols=s.kols||[];
+      if(isNew)s.kols.push(Object.assign({id:uid()},o));else Object.assign(k,o);
+      commit();
+      if(o.status==='passed'&&!was)xpToast(L0,'+30 XP');
+    },
+    onDelete:isNew?null:()=>{s.kols=s.kols.filter(x=>x.id!==k.id);commit();}});
+}
+A.addKol=()=>{const s=S.subjects.find(x=>x.id===ui.subject);if(s)kolSheet(s,null);};
+A.editKol=el=>{const s=S.subjects.find(x=>x.id===ui.subject);if(!s)return;const k=(s.kols||[]).find(x=>x.id===el.dataset.id);if(k)kolSheet(s,k);};
+A.tPreset=el=>{if(T.state==='idle'){T.total=Number(el.dataset.v);render();}};
+A.tStart=()=>{
+  if(!T.sid){toast('Prvo dodaj predmet');return;}
+  if(T.state==='pause')T.endsAt=Date.now()+T.left;else T.endsAt=Date.now()+T.total*60000;
+  T.state='run';clearInterval(tickId);tickId=setInterval(tick,500);render();
+};
+A.tPause=()=>{T.left=Math.max(0,T.endsAt-Date.now());T.state='pause';clearInterval(tickId);tickId=null;render();};
+A.tStop=()=>{
+  const el=Math.round((T.total*60000-timerRem())/60000);
+  clearInterval(tickId);tickId=null;T.state='idle';
+  if(el>=1){const L0=stats().level;logStudy(T.sid,el);commit();xpToast(L0,'Sačuvano: '+el+' min');}
+  else{render();toast('Sesija kraća od minuta nije sačuvana');}
+};
+
+/* gym */
+function syncDraft(){
+  if(!S.draft)return;
+  $$('[data-set]').forEach(inp=>{const p=inp.dataset.set.split(':');const e=S.draft.entries[+p[0]];const s=e&&e.sets[+p[1]];if(s)s[p[2]]=inp.value;});
+}
+A.startPlan=el=>{
+  const p=S.plans.find(x=>x.id===el.dataset.id);if(!p)return;
+  S.draft={planName:p.name,startedAt:Date.now(),entries:p.exercises.map(ex=>{
+    const ls=lastSets(ex.name),sets=[];
+    for(let i=0;i<ex.sets;i++){const l=ls&&ls[Math.min(i,ls.length-1)];sets.push({kg:l&&l.kg?String(l.kg):'',reps:l&&l.reps?String(l.reps):''});}
+    return {name:ex.name,target:ex.sets+'×'+ex.reps,sets:sets};})};
+  commit();
+};
+A.startEmpty=()=>{S.draft={planName:'Slobodan trening',startedAt:Date.now(),entries:[]};commit();};
+A.addSet=el=>{syncDraft();const e=S.draft.entries[+el.dataset.e];const l=e.sets[e.sets.length-1];e.sets.push({kg:l?l.kg:'',reps:l?l.reps:''});commit();};
+A.delSet=el=>{syncDraft();const e=S.draft.entries[+el.dataset.e];e.sets.splice(+el.dataset.s,1);commit();};
+A.delEx=el=>{syncDraft();S.draft.entries.splice(+el.dataset.e,1);commit();};
+A.addEx=()=>{
+  const v=val('nex');if(!v)return;syncDraft();
+  const ls=lastSets(v);
+  S.draft.entries.push({name:v,target:'',sets:(ls&&ls.length?ls.map(s=>({kg:s.kg?String(s.kg):'',reps:s.reps?String(s.reps):''})):[{kg:'',reps:''},{kg:'',reps:''},{kg:'',reps:''}])});
+  commit();
+};
+A.cancelWorkout=()=>askConfirm('Odbaciti ovaj trening? Upisane serije se brišu.','Odbaci',()=>{S.draft=null;commit();},'orange');
+A.finishWorkout=()=>{
+  syncDraft();
+  const entries=S.draft.entries.map(e=>({name:e.name,sets:e.sets.map(s=>({kg:num(s.kg),reps:Math.round(num(s.reps))})).filter(s=>s.reps>0)})).filter(e=>e.sets.length);
+  if(!entries.length){toast('Upiši bar jednu seriju');return;}
+  const L0=stats().level;
+  S.sessions.push({id:uid(),date:TODAY(),planName:S.draft.planName,entries:entries,at:Date.now(),mins:Math.max(1,Math.round((Date.now()-S.draft.startedAt)/60000))});
+  S.draft=null;commit();xpToast(L0,'Trening sačuvan · +50 XP');
+};
+A.delSession=el=>askConfirm('Obrisati ovaj trening iz istorije?','Obriši',()=>{S.sessions=S.sessions.filter(s=>s.id!==el.dataset.id);commit();},'orange');
+function parseEx(txt){
+  return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const m=l.match(/^(.*?)\s+(\d+)\s*[x×*]\s*(\d+(?:-\d+)?)\s*$/i);
+    return m?{id:uid(),name:m[1].trim(),sets:Math.min(10,+m[2]),reps:m[3]}:{id:uid(),name:l,sets:3,reps:'10'};
+  });
+}
+function planSheet(p){
+  const isNew=!p;
+  openSheet({title:isNew?'Novi plan':'Plan',color:'orange',fields:[
+    {name:'name',label:'Naziv plana',value:p?p.name:'',placeholder:'npr. Push'},
+    {name:'ex',label:'Vežbe (jedna po liniji, serije x ponavljanja)',type:'textarea',rows:7,value:p?p.exercises.map(e=>e.name+' '+e.sets+'x'+e.reps).join('\n'):'',placeholder:'Bench press 4x8\nPrisetivanje 3x12'}],
+    onSave:v=>{
+      if(!v.name.trim()){toast('Upiši naziv plana');return false;}
+      const ex=parseEx(v.ex);if(!ex.length){toast('Dodaj bar jednu vežbu');return false;}
+      if(isNew)S.plans.push({id:uid(),name:v.name.trim(),exercises:ex});else{p.name=v.name.trim();p.exercises=ex;}
+      commit();},
+    onDelete:isNew?null:()=>askConfirm('Obrisati plan "'+p.name+'"? Istorija treninga ostaje.','Obriši',()=>{S.plans=S.plans.filter(x=>x.id!==p.id);commit();},'orange')});
+}
+A.addPlan=()=>planSheet(null);
+A.editPlan=el=>{const p=S.plans.find(x=>x.id===el.dataset.id);if(p)planSheet(p);};
+A.addBody=()=>{
+  const kg=num(val('bwk'));if(!kg||kg<20||kg>400){toast('Upiši težinu u kilogramima');return;}
+  S.body.push({id:uid(),date:val('bwd')||TODAY(),kg:Math.round(kg*10)/10});commit();
+};
+A.delBody=el=>{S.body=S.body.filter(x=>x.id!==el.dataset.id);commit();};
+
+/* budzet */
+function txSheet(type,tx){
+  const isNew=!tx;
+  const base=isNew?{amount:'',cat:'',date:(ui.bMonth===TODAY().slice(0,7)?TODAY():ui.bMonth+'-01'),note:''}:tx;
+  const titles={out:'Rashod',in:'Prihod',save:'Uplata u štednju'};
+  const fields=[{name:'amount',label:'Iznos ('+(S.settings.currency||'RSD')+')',value:base.amount,inputmode:'decimal'}];
+  if(type==='out')fields.push({name:'cat',label:'Kategorija',type:'select',value:base.cat,options:S.budget.cats.map(c=>[c.id,c.name]).concat([['','Bez kategorije']])});
+  fields.push({name:'date',label:'Datum',type:'date',value:base.date});
+  fields.push({name:'note',label:'Napomena (nije obavezno)',value:base.note,placeholder:type==='in'?'npr. Stipendija':type==='out'?'npr. Ručak':''});
+  openSheet({title:(isNew?'Novi: ':'')+titles[type].toLowerCase(),color:'teal',fields:fields,
+    onSave:v=>{
+      const a=Math.round(num(v.amount)*100)/100;
+      if(!(a>0)||a>1e9){toast('Upiši iznos');return false;}
+      if(!v.date){toast('Izaberi datum');return false;}
+      const L0=stats().level;
+      if(isNew)S.tx.push({id:uid(),date:v.date,amount:a,type:type,cat:type==='out'?(v.cat||''):'',note:(v.note||'').trim(),at:Date.now()});
+      else{tx.date=v.date;tx.amount=a;tx.note=(v.note||'').trim();if(type==='out')tx.cat=v.cat||'';}
+      ui.bMonth=v.date.slice(0,7);commit();if(isNew)xpToast(L0,'+2 XP');
+    },
+    onDelete:isNew?null:()=>{S.tx=S.tx.filter(x=>x.id!==tx.id);commit();}});
+}
+A.addTx=el=>txSheet(el.dataset.t,null);
+A.editTx=el=>{const x=S.tx.find(t=>t.id===el.dataset.id);if(x)txSheet(x.type,x);};
+A.bPrev=()=>{ui.bMonth=monthAdd(ui.bMonth,-1);render();};
+A.bNext=()=>{if(ui.bMonth<TODAY().slice(0,7)){ui.bMonth=monthAdd(ui.bMonth,1);render();}};
+function catSheet(c){
+  const isNew=!c;
+  openSheet({title:isNew?'Nova kategorija':'Kategorija',color:'teal',fields:[
+    {name:'name',label:'Naziv',value:c?c.name:''},
+    {name:'limit',label:'Mesečni limit (0 = bez limita)',value:c&&c.limit?c.limit:'',inputmode:'decimal'}],
+    onSave:v=>{
+      if(!v.name.trim()){toast('Upiši naziv');return false;}
+      const lim=Math.max(0,num(v.limit));
+      if(isNew)S.budget.cats.push({id:uid(),name:v.name.trim(),limit:lim});else{c.name=v.name.trim();c.limit=lim;}
+      commit();},
+    onDelete:isNew?null:()=>askConfirm('Obrisati kategoriju "'+c.name+'"? Troškovi ostaju, samo bez kategorije.','Obriši',()=>{S.tx.forEach(x=>{if(x.cat===c.id)x.cat='';});S.budget.cats=S.budget.cats.filter(x=>x.id!==c.id);commit();},'teal')});
+}
+A.addCat=()=>catSheet(null);
+A.editCat=el=>{const c=S.budget.cats.find(x=>x.id===el.dataset.id);if(c)catSheet(c);};
+A.setLimit=()=>openSheet({title:'Mesečni limit',color:'teal',fields:[{name:'m',label:'Koliko možeš da potrošiš mesečno ('+(S.settings.currency||'RSD')+')',value:S.budget.monthly||'',inputmode:'decimal'}],
+  html:'<p class="muted" style="margin-top:-4px">Ako ostaviš prazno, računa se zbir limita po kategorijama.</p>',
+  onSave:v=>{S.budget.monthly=Math.max(0,num(v.m));commit();}});
+A.editSavings=()=>openSheet({title:'Cilj štednje',color:'teal',fields:[
+  {name:'name',label:'Za šta štediš',value:S.budget.goal.name,placeholder:'npr. Putovanje'},
+  {name:'target',label:'Ciljni iznos ('+(S.settings.currency||'RSD')+')',value:S.budget.goal.target||'',inputmode:'decimal'}],
+  onSave:v=>{S.budget.goal={name:v.name.trim(),target:Math.max(0,num(v.target))};commit();}});
+
+/* ja */
+function jEntry(d){return S.journal[d]||(S.journal[d]={mood:0,text:'',good:''});}
+A.moodToday=el=>{const e=jEntry(TODAY());e.mood=e.mood===Number(el.dataset.v)?0:Number(el.dataset.v);commit();};
+A.setMood=el=>{const e=jEntry(ui.jDate);e.mood=e.mood===Number(el.dataset.v)?0:Number(el.dataset.v);commit();};
+A.jPrev=()=>{ui.jDate=addDays(ui.jDate,-1);render();};
+A.jNext=()=>{if(ui.jDate<TODAY()){ui.jDate=addDays(ui.jDate,1);render();}};
+A.jToday=()=>{ui.jDate=TODAY();render();};
+A.openDay=el=>{ui.jDate=el.dataset.d;render();window.scrollTo(0,0);};
+function goalSheet(g){
+  const isNew=!g;
+  openSheet({title:isNew?'Novi cilj':'Cilj',color:'green',fields:[
+    {name:'title',label:'Cilj',value:g?g.title:'',placeholder:'npr. Položiti Statistiku'},
+    {name:'cat',label:'Oblast',type:'select',value:g?g.cat:'Faks',options:GOALCATS.map(c=>[c,c])},
+    {name:'target',label:'Do kada (nije obavezno)',type:'date',value:g?g.target:''}],
+    onSave:v=>{
+      if(!v.title.trim()){toast('Upiši cilj');return false;}
+      if(isNew)S.goals.push({id:uid(),title:v.title.trim(),cat:v.cat,target:v.target,milestones:[]});else{g.title=v.title.trim();g.cat=v.cat;g.target=v.target;}
+      commit();},
+    onDelete:isNew?null:()=>askConfirm('Obrisati cilj "'+g.title+'"?','Obriši',()=>{S.goals=S.goals.filter(x=>x.id!==g.id);commit();},'green')});
+}
+A.addGoal=()=>goalSheet(null);
+A.editGoal=el=>{const g=S.goals.find(x=>x.id===el.dataset.id);if(g)goalSheet(g);};
+A.addMs=el=>{const g=S.goals.find(x=>x.id===el.dataset.id);if(!g)return;const v=val('ms-'+g.id);if(!v)return;g.milestones.push({id:uid(),title:v,done:false});commit();};
+A.toggleMs=el=>{
+  const g=S.goals.find(x=>x.id===el.dataset.g);if(!g)return;const m=g.milestones.find(x=>x.id===el.dataset.id);if(!m)return;
+  const L0=stats().level;m.done=!m.done;commit();
+  if(m.done){const all=g.milestones.every(x=>x.done);xpToast(L0,all?'Cilj ostvaren! +25 XP':'+25 XP');}
+};
+A.delMs=el=>{const g=S.goals.find(x=>x.id===el.dataset.g);if(!g)return;g.milestones=g.milestones.filter(x=>x.id!==el.dataset.id);commit();};
+A.addHabit=()=>{const v=val('nh');if(!v)return;S.habits.push({id:uid(),name:v});commit();};
+A.quickHabit=el=>{S.habits.push({id:uid(),name:el.dataset.n});commit();};
+A.toggleHabit=el=>{
+  const d=el.dataset.d||TODAY(),id=el.dataset.id;
+  const arr=S.habitLog[d]||(S.habitLog[d]=[]);const i=arr.indexOf(id);
+  const L0=stats().level;
+  if(i>=0)arr.splice(i,1);else arr.push(id);
+  commit();if(i<0)xpToast(L0,'+5 XP');
+};
+A.editHabit=el=>{
+  const h=S.habits.find(x=>x.id===el.dataset.id);if(!h)return;
+  openSheet({title:'Navika',color:'green',fields:[{name:'name',label:'Naziv',value:h.name}],
+    onSave:v=>{if(!v.name.trim()){toast('Upiši naziv');return false;}h.name=v.name.trim();commit();},
+    onDelete:()=>askConfirm('Obrisati naviku "'+h.name+'"?','Obriši',()=>{S.habits=S.habits.filter(x=>x.id!==h.id);commit();},'green')});
+};
+
+/* sinhronizacija */
+const FB_ERRS={
+  'auth/unauthorized-domain':'Ovaj sajt nije dodat u Authorized domains u Firebase-u.',
+  'auth/invalid-api-key':'Firebase ključ nije ispravan. Proveri firebase-config.js.',
+  'auth/api-key-not-valid.-please-pass-a-valid-api-key.':'Firebase ključ nije ispravan. Proveri firebase-config.js.',
+  'auth/operation-not-allowed':'Google prijava nije uključena u Firebase-u.',
+  'auth/network-request-failed':'Nema interneta.'
+};
+A.syncIn=()=>{
+  if(!FB.adapter){toast('Sinhronizacija se još učitava. Probaj za par sekundi.');return;}
+  const pr=FB.adapter.signIn();
+  closeSheet();
+  Promise.resolve(pr).catch(e=>{
+    const c=e&&e.code;
+    if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
+    FB.err=e;toast(FB_ERRS[c]||('Prijava nije uspela'+(c?': '+c:'')));
+  });
+};
+A.syncOut=()=>{
+  closeSheet();
+  Promise.resolve(FB.adapter&&FB.adapter.signOut()).then(()=>toast('Odjavljen. Podaci ostaju na ovom uređaju.'));
+};
+A.syncNow=()=>{closeSheet();if(!FB.user)return;if(!navigator.onLine){toast('Nema interneta');return;}toast('Sinhronizujem…');FB.latest=null;fbFlush();};
+
+/* settings, backup, demo */
+A.settings=()=>{
+  openSheet({title:'Podešavanja',color:'pink',focus:false,
+    fields:[{name:'name',label:'Kako da te zovem?',value:S.settings.name},
+      {name:'currency',label:'Oznaka valute',value:S.settings.currency},
+      {name:'gym',label:'Cilj: treninga nedeljno',type:'select',value:S.settings.gym,options:[1,2,3,4,5,6,7].map(n=>[n,String(n)])},
+      {name:'theme',label:'Tema',type:'select',value:S.settings.theme,options:[['auto','Prema uređaju'],['light','Svetla'],['dark','Tamna']]}],
+    html:syncHtml()+'<div class="sub-h">Podaci</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn sm" data-a="exportData">Sačuvaj kopiju</button><button class="btn sm" data-a="importSheet">Uvezi kopiju</button><button class="btn sm" data-a="demo">Učitaj primer</button><button class="btn sm danger" data-a="resetAll">Obriši sve</button></div>',
+    onSave:v=>{S.settings.name=v.name.trim();S.settings.gym=Number(v.gym);S.settings.theme=v.theme;S.settings.currency=(v.currency||'').trim().slice(0,6)||'RSD';applyTheme();commit();}});
+};
+A.exportData=async()=>{
+  const json=JSON.stringify({app:'moj-zivot',v:1,exported:new Date().toISOString(),data:S},null,2);
+  try{
+    const c=window.claude;const dl=c&&c.use?await c.use('downloads'):null;
+    if(!dl)throw new Error('no');
+    await dl.save({filename:'moj-zivot-'+TODAY()+'.json',data:json});toast('Kopija je spremna');
+  }catch(e){
+    if(e&&e.code==='cancelled'){return;}
+    try{const b=new Blob([json],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='moj-zivot-'+TODAY()+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}catch(x){}
+    closeSheet();
+    openSheet({title:'Kopija podataka',color:'pink',focus:false,html:'<p class="muted">Kopija bi trebalo da je preuzeta kao fajl (proveri Preuzimanja). Ako nije, kopiraj ceo tekst ispod i čuvaj ga negde. Kasnije ga možeš uvesti nazad.</p><textarea rows="10" readonly onclick="this.select()">'+esc(json)+'</textarea>'});
+  }
+};
+A.importSheet=()=>{
+  closeSheet();
+  openSheet({title:'Uvezi kopiju',color:'pink',saveLabel:'Uvezi',fields:[{name:'json',label:'Nalepi sadržaj kopije',type:'textarea',rows:9}],
+    html:'<label class="fl"><span>Ili izaberi fajl kopije</span><input type="file" id="impf" data-ch="impf" accept=".json,application/json"></label>',
+    onSave:v=>{
+      let o;try{o=JSON.parse(v.json);}catch(e){toast('Tekst nije ispravan');return false;}
+      const data=o&&o.data?o.data:o;
+      if(!data||typeof data!=='object'||!Array.isArray(data.tasks)){toast('Ovo ne liči na kopiju aplikacije');return false;}
+      askConfirm('Uvoz zamenjuje sve trenutne podatke. Nastaviti?','Zameni',()=>{S=norm(data);applyTheme();commit();toast('Uvezeno');},'pink');
+      return true;}});
+};
+A.resetAll=()=>{closeSheet();askConfirm('Ovo briše sve: obaveze, raspored, predmete, treninge, dnevnik. Ne može da se vrati.','Obriši sve',()=>{const s=S.settings;S=blank();S.settings=s;commit();toast('Sve je obrisano');},'pink');};
+A.demo=()=>{
+  const go=()=>{loadDemo();commit();toast('Primer je učitan');};
+  closeSheet();
+  if(hasContent())askConfirm('Primer zamenjuje trenutne podatke. Nastaviti?','Zameni',go,'pink');else go();
+};
+function loadDemo(){
+  const t=TODAY(),s=blank();s.settings=S.settings;
+  const mk=(title,due,prio)=>({id:uid(),title:title,due:due,prio:prio,done:false,doneAt:''});
+  s.tasks=[mk('Predati seminarski rad',t,2),mk('Kupiti namirnice',t,0),mk('Pročitati 3. poglavlje',addDays(t,1),1),mk('Javiti se asistentu',addDays(t,-1),1),mk('Rezervisati termin kod zubara','',0)];
+  const bk=(title,day,start,end,cat)=>({id:uid(),title:title,day:day,start:start,end:end,cat:cat});
+  s.blocks=[bk('Predavanja: Statistika',0,'10:00','12:00','faks'),bk('Teretana',0,'18:00','19:30','gym'),bk('Vežbe: Programiranje',1,'12:00','14:00','faks'),bk('Rad na projektu',2,'16:00','19:00','posao'),bk('Teretana',2,'19:30','21:00','gym'),bk('Engleski',3,'10:00','12:00','faks'),bk('Teretana',4,'18:00','19:30','gym'),bk('Učenje',5,'11:00','13:00','faks'),bk('Planiranje nedelje',6,'20:00','21:00','licno')];
+  const tp=(a)=>a.map(x=>({id:uid(),title:x[0],done:x[1]}));
+  s.subjects=[
+    {id:uid(),name:'Statistika',espb:6,exam:addDays(t,24),grade:'',color:'#8B3DFF',topics:tp([['Deskriptivna statistika',true],['Verovatnoća',true],['Raspodele',true],['Testiranje hipoteza',false],['Regresija',false],['ANOVA',false],['Neparametrijski testovi',false],['Ponavljanje zadataka',false]])},
+    {id:uid(),name:'Engleski jezik',espb:4,exam:addDays(t,40),grade:'',color:'#E8246F',topics:tp([['Gramatika: vremena',true],['Vokabular: akademski',false],['Pisanje eseja',false],['Slušanje',false]])},
+    {id:uid(),name:'Uvod u programiranje',espb:7,exam:addDays(t,-30),grade:'9',color:'#3B5BFF',topics:tp([['Petlje',true],['Funkcije',true],['Nizovi',true],['Rekurzija',true]])}];
+  const kl=(title,date,status,pts,max)=>({id:uid(),title:title,date:date,status:status,pts:pts,max:max});
+  s.subjects[0].kols=[kl('I kolokvijum',addDays(t,-14),'passed',24,30),kl('II kolokvijum',addDays(t,9),'pending','',30)];
+  s.subjects[1].kols=[kl('Test iz gramatike',addDays(t,-5),'failed',11,30),kl('Esej',addDays(t,16),'pending','',20)];
+  s.subjects[2].kols=[kl('Kolokvijum 1',addDays(t,-70),'passed',41,50),kl('Kolokvijum 2',addDays(t,-45),'passed',38,50)];
+  s.subjects[0].emoji='📊';s.subjects[1].emoji='💬';s.subjects[2].emoji='💻';
+  const bd=addDays(t,6);
+  s.dates=[{id:uid(),title:'Markov rođendan',kind:'rodjendan',date:(+bd.slice(0,4)-21)+bd.slice(4),repeat:'yearly',note:''},
+    {id:uid(),title:'Stanarina',kind:'uplata',date:addDays(t,3),repeat:'monthly',note:''},
+    {id:uid(),title:'Put kući',kind:'putovanje',date:addDays(t,18),repeat:'once',note:'Autobus u 14h'}];
+  const mm=(title,type,status,year,rating,review)=>({id:uid(),title:title,type:type,status:status,year:year,rating:rating,review:review,cover:'',at:Date.now()-s.media.length*1000});
+  s.media=[];
+  s.media.push(mm('Interstellar','film','done',2014,5,'Muzika i kraj su me slomili.'));
+  s.media.push(mm('Breaking Bad','serija','now',2008,0,''));
+  s.media.push(mm('Prokleta avlija','knjiga','done',1954,4,'Kratka, teška i prelepa.'));
+  const sid=s.subjects[0].id;
+  for(let i=1;i<=5;i++)s.study.push({id:uid(),sid:sid,date:addDays(t,-i),min:i%2?50:25,at:Date.now()-i*86400000});
+  s.plans=[
+    {id:uid(),name:'Push',exercises:[['Bench press',4,'8'],['Overhead press',3,'10'],['Incline DB press',3,'10'],['Triceps pushdown',3,'12']].map(x=>({id:uid(),name:x[0],sets:x[1],reps:x[2]}))},
+    {id:uid(),name:'Pull',exercises:[['Lat pulldown',4,'10'],['Veslanje',3,'10'],['Biceps curl',3,'12']].map(x=>({id:uid(),name:x[0],sets:x[1],reps:x[2]}))},
+    {id:uid(),name:'Noge',exercises:[['Čučanj',4,'8'],['Rumunsko mrtvo dizanje',3,'10'],['Iskoraci',3,'12']].map(x=>({id:uid(),name:x[0],sets:x[1],reps:x[2]}))}];
+  [[20,'Push',60],[18,'Pull',50],[16,'Noge',80],[13,'Push',62.5],[11,'Pull',52.5],[9,'Noge',85],[6,'Push',65]].forEach((r,i)=>{
+    const kg=r[2];
+    s.sessions.push({id:uid(),date:addDays(t,-r[0]),planName:r[1],at:Date.now()-r[0]*86400000+i,mins:55,
+      entries:[{name:r[1]==='Push'?'Bench press':r[1]==='Pull'?'Lat pulldown':'Čučanj',sets:[{kg:kg,reps:8},{kg:kg,reps:8},{kg:kg,reps:7},{kg:kg,reps:6}]},{name:r[1]==='Push'?'Overhead press':r[1]==='Pull'?'Veslanje':'Iskoraci',sets:[{kg:kg/2.5,reps:10},{kg:kg/2.5,reps:10},{kg:kg/2.5,reps:9}]}]});
+  });
+  [[42,78.6],[35,78.1],[28,77.9],[21,77.6],[14,77.1],[7,76.9],[1,76.6]].forEach(r=>s.body.push({id:uid(),date:addDays(t,-r[0]),kg:r[1]}));
+  s.habits=[{id:uid(),name:'Voda 2 l'},{id:uid(),name:'Šetnja'},{id:uid(),name:'Čitanje 20 min'}];
+  for(let i=0;i<9;i++){const d=addDays(t,-i-1);s.habitLog[d]=s.habits.filter((h,k)=>(i+k)%3!==2).map(h=>h.id);}
+  s.journal[addDays(t,-1)]={mood:4,text:'Produktivan dan. Završila sam dva poglavlja i otišla na trening.',good:'Dobar trening posle dugo vremena'};
+  s.journal[addDays(t,-2)]={mood:3,text:'Umor, ali sam ipak odradila najvažnije.',good:'Kafa sa drugarima'};
+  s.goals=[
+    {id:uid(),title:'Položiti Statistiku',cat:'Faks',target:addDays(t,24),milestones:[['Završiti sve lekcije',false],['Uraditi 3 stara roka',false],['Konsultacije kod asistenta',true]].map(x=>({id:uid(),title:x[0],done:x[1]}))},
+    {id:uid(),title:'Bench press 70 kg',cat:'Zdravlje',target:'',milestones:[['60 kg',true],['65 kg',true],['67,5 kg',false],['70 kg',false]].map(x=>({id:uid(),title:x[0],done:x[1]}))}];
+  const cats=['Hrana','Prevoz','Smeštaj i računi','Izlasci','Faks i knjige','Zdravlje','Ostalo'].map((n,i)=>({id:uid(),name:n,limit:[9000,3000,12000,4000,2500,2000,0][i]}));
+  s.budget={monthly:30000,goal:{name:'Putovanje',target:60000},cats:cats};
+  const first=t.slice(0,8)+'01',pm=addDays(first,-10),pm2=addDays(first,-40);
+  const tx=(d,type,a,note,ci)=>s.tx.push({id:uid(),date:d,amount:a,type:type,cat:ci==null?'':cats[ci].id,note:note,at:Date.now()+s.tx.length});
+  tx(first,'in',25000,'Stipendija');tx(first,'in',8000,'Od kuće');tx(first,'save',5000,'');
+  [[0,850,'Pekara i market',0],[1,1200,'Kafa i izlazak',3],[2,500,'Gradski prevoz',1],[3,1400,'Namirnice',0],[4,900,'Skripta',4],[5,650,'Apoteka',5],[6,1750,'Namirnice',0],[7,2200,'Večera sa društvom',3]].forEach(r=>{const d=addDays(t,-r[0]);tx(d<first?first:d,'out',r[1],r[2],r[3]);});
+  tx(first,'out',6500,'Dom: račun',2);
+  tx(pm,'in',33000,'Prihod');tx(pm,'out',7800,'Hrana',0);tx(pm,'out',3200,'Izlasci',3);tx(pm,'out',6500,'Dom: račun',2);tx(pm,'save',5000,'');
+  tx(pm2,'in',31000,'Prihod');tx(pm2,'out',9400,'Hrana',0);tx(pm2,'out',2600,'Prevoz',1);tx(pm2,'out',6500,'Dom: račun',2);
+  S=norm(s);
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]');
+  if(el&&A[el.dataset.a]){e.preventDefault();A[el.dataset.a](el,e);}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const el=e.target;
+  if(el&&el.dataset&&el.dataset.enter&&A[el.dataset.enter]){e.preventDefault();A[el.dataset.enter](el,e);}
+});
+document.addEventListener('input',e=>{
+  const id=e.target.id;
+  if(id==='jt'||id==='jg'){
+    const j=jEntry(ui.jDate);
+    if(id==='jt')j.text=e.target.value;else j.good=e.target.value;
+    queueSave();
+  }
+});
+const CH={
+  timerSubj:el=>{T.sid=el.value;},
+  impf:el=>{const f=el.files&&el.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const ta=$('#sheet [name=json]');if(ta)ta.value=String(r.result);};r.readAsText(f);},
+  exSel:el=>{ui.exSel=el.value;render();},
+  kindSel:el=>{const r=$('#sheet [name=repeat]');if(r)r.value=({rodjendan:'yearly',uplata:'monthly'})[el.value]||'once';},
+  coverf:el=>{
+    const f=el.files&&el.files[0];if(!f)return;
+    const fr=new FileReader();
+    fr.onerror=()=>toast('Slika nije učitana');
+    fr.onload=()=>{
+      const im=new Image();
+      im.onerror=()=>toast('Taj fajl nije slika');
+      im.onload=()=>{
+        const W=160,H=240,c=document.createElement('canvas');c.width=W;c.height=H;
+        const g=c.getContext('2d');const r=Math.max(W/im.width,H/im.height),w=im.width*r,h=im.height*r;
+        g.fillStyle='#fff';g.fillRect(0,0,W,H);g.drawImage(im,(W-w)/2,(H-h)/2,w,h);
+        let url='';try{url=c.toDataURL('image/jpeg',0.7);}catch(e){}
+        if(!url||url.length<40){toast('Slika nije obrađena');return;}
+        const inp=$('#sheet [name=cover]'),pv=$('#cvprev');
+        if(inp)inp.value=url;
+        if(pv){pv.style.backgroundImage='url('+url+')';pv.style.padding='0';pv.textContent='';}
+      };
+      im.src=String(fr.result);
+    };
+    fr.readAsDataURL(f);
+  }
+};
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.dataset&&el.dataset.set){syncDraft();queueSave();return;}
+  if(el.dataset&&el.dataset.ch&&CH[el.dataset.ch])CH[el.dataset.ch](el);
+});
+
+/* ---------- boot ---------- */
+(function boot(){
+  const cached=lsLoad();
+  if(cached)S=norm(cached);
+  applyTheme();
+  render();
+  if(FB.on){fbBoot();return;}
+  const getClaude=()=>new Promise(res=>{let n=0;const iv=setInterval(()=>{if(window.claude&&window.claude.use){clearInterval(iv);res(window.claude);}else if(++n>40){clearInterval(iv);res(null);}},100);});
+  (async()=>{
+    const c=await getClaude();
+    if(!c){saveState='local';renderStatus();return;}
+    let d=null,id=null;
+    try{const u=await c.use('user');id=u?await u.id():null;d=await c.use('db');}catch(e){}
+    if(!d||!id){saveState='local';renderStatus();return;}
+    db=d;uidStr=id;
+    try{
+      const snap=await db.collection('data/users/'+id).get();
+      const map={};
+      snap.docs.forEach(x=>{if(x.exists){const dt=x.data();map[x.id]=dt;known.add(x.id);lastWritten[x.id]=JSON.stringify(dt);}});
+      const empty=!Object.keys(map).length;
+      if(empty){if(hasContent()){flush();}else saveState='saved';}
+      else if(dirty){flush();}
+      else{S=fromDocs(map);lsSave();saveState='saved';applyTheme();render();}
+    }catch(e){saveState='error';console.error(e);}
+    renderStatus();
+  })();
+})();
+})();
+</script>
+<script>
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+}
+</script>
+</body>
+</html>
