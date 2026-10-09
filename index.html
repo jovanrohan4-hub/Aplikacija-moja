@@ -369,7 +369,7 @@ function norm(o){
   b.draft=o.draft||null;
   b.tx=Array.isArray(o.tx)?o.tx:[];
   if(o.budget&&Array.isArray(o.budget.cats))b.budget={monthly:Number(o.budget.monthly)||0,goal:Object.assign({name:'',target:0},o.budget.goal||{}),cats:o.budget.cats};
-  b.subjects.forEach(s=>{s.topics=s.topics||[];});
+  b.subjects.forEach(s=>{s.topics=s.topics||[];s.kols=s.kols||[];});
   b.goals.forEach(g=>{g.milestones=g.milestones||[];});
   b.sessions.sort((a,c)=>(a.at||0)-(c.at||0));
   return b;
@@ -705,7 +705,8 @@ function stats(){
   const jDays=Object.keys(S.journal).filter(d=>{const j=S.journal[d];return (j.text||'').trim()||(j.good||'').trim();});
   const ms=S.goals.reduce((a,g)=>a+g.milestones.filter(m=>m.done).length,0);
   const topics=S.subjects.reduce((a,s)=>a+s.topics.filter(x=>x.done).length,0);
-  const xp=tasksDone*10+habitChecks*5+S.sessions.length*50+Math.floor(studyMin/5)*2+jDays.length*15+ms*25+topics*20+S.tx.length*2;
+  const kolsP=S.subjects.reduce((a,s)=>a+(s.kols||[]).filter(k=>k.status==='passed').length,0);
+  const xp=tasksDone*10+habitChecks*5+S.sessions.length*50+Math.floor(studyMin/5)*2+jDays.length*15+ms*25+topics*20+kolsP*30+S.tx.length*2;
   const per=200,level=Math.floor(xp/per)+1,into=xp%per;
   const titles=[[15,'Legenda'],[10,'Mašina'],[6,'Na dobrom putu'],[3,'U ritmu'],[1,'Početnik']];
   const title=(titles.find(x=>level>=x[0])||titles[4])[1];
@@ -826,7 +827,13 @@ VIEWS.danas=()=>{
   const C=2*Math.PI*44;
   const nowStr=pad(now.getHours())+':'+pad(now.getMinutes());
   const bl=S.blocks.filter(b=>b.day===dow(t)).sort((a,b)=>a.start.localeCompare(b.start));
-  const exams=S.subjects.filter(s=>s.exam&&s.exam>=t&&!s.grade).sort((a,b)=>a.exam.localeCompare(b.exam)).slice(0,3);
+  const upc=[];
+  S.subjects.forEach(s=>{
+    if(s.exam&&s.exam>=t&&!s.grade)upc.push({s:s,date:s.exam,label:'Ispit'});
+    (s.kols||[]).forEach(k=>{if(k.status==='pending'&&k.date&&k.date>=t)upc.push({s:s,date:k.date,label:k.title});});
+  });
+  upc.sort((a,b)=>a.date.localeCompare(b.date));
+  const exams=upc.slice(0,4);
   const mood=(S.journal[t]||{}).mood||0;
   const empty=!S.tasks.length&&!S.blocks.length&&!S.subjects.length&&!S.habits.length;
   let o=head('Danas');
@@ -852,7 +859,7 @@ VIEWS.danas=()=>{
     (bl.length?bl.map(b=>'<button class="block b-'+b.cat+(b.start<=nowStr&&nowStr<b.end?' now':'')+'" data-a="editBlock" data-id="'+b.id+'"><span class="tm">'+b.start+' – '+b.end+(b.start<=nowStr&&nowStr<b.end?' · sada':'')+'</span><span class="bt">'+esc(b.title)+'</span></button>').join(''):'<div class="empty-s">Nema blokova za danas.</div>')+
     '<button class="add-in" data-a="addBlock" data-day="'+dow(t)+'">+ Dodaj blok</button></div>';
   o+=budgetCard();
-  if(exams.length)o+='<div class="card c-violet"><h2>Najbliži ispiti</h2>'+exams.map(s=>{const n=diffDays(s.exam,t);const p=s.topics.length?Math.round(s.topics.filter(x=>x.done).length/s.topics.length*100):0;return '<button class="row" style="width:100%;display:block" data-a="openSubject" data-id="'+s.id+'"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(s.name)+'</b><span class="badge" style="--accent:'+s.color+';--accent-t:var(--surface2)">'+(n===0?'danas':'za '+n+' d')+'</span></div><div style="margin-top:8px">'+bar(p,s.color)+'</div></button>';}).join('')+'</div>';
+  if(exams.length)o+='<div class="card c-violet"><h2>Najbliži ispiti i kolokvijumi</h2>'+exams.map(u=>{const s=u.s,n=diffDays(u.date,t);const p=s.topics.length?Math.round(s.topics.filter(x=>x.done).length/s.topics.length*100):0;return '<button class="row" style="width:100%;display:block" data-a="openSubject" data-id="'+s.id+'"><div style="display:flex;justify-content:space-between;gap:8px"><div><b>'+esc(s.name)+'</b><div class="muted" style="font-size:13px">'+esc(u.label)+'</div></div><span class="badge" style="--accent:'+s.color+';--accent-t:var(--surface2)">'+(n===0?'danas':'za '+n+' d')+'</span></div><div style="margin-top:8px">'+bar(p,s.color)+'</div></button>';}).join('')+'</div>';
   o+='<div class="card c-green"><h2>Kako si danas?</h2><div class="moods">'+MOODS.map((m,i)=>'<button class="mood '+(mood===i+1?'on':'')+'" aria-pressed="'+(mood===i+1)+'" data-a="moodToday" data-v="'+(i+1)+'">'+m[0]+'<small>'+m[1]+'</small></button>').join('')+'</div></div>';
   o+='</div></div>';
   return o;
@@ -902,10 +909,38 @@ VIEWS.faks=()=>{
     let ex='bez datuma ispita';
     if(s.grade)ex='Ocena '+s.grade;
     else if(s.exam){const k=diffDays(s.exam,t);ex=k<0?'ispit je prošao':k===0?'ispit je danas':'ispit za '+k+' d';}
-    return '<button class="subj" style="--accent:'+s.color+'" data-a="openSubject" data-id="'+s.id+'"><div class="subj-top"><b>'+esc(s.name)+'</b><span class="muted">'+(s.espb||0)+' ESPB</span></div>'+bar(p)+'<div class="subj-meta"><span>'+(n?dn+'/'+n+' lekcija':'nema lekcija')+'</span><span>'+ex+'</span></div></button>';
+    return '<button class="subj" style="--accent:'+s.color+'" data-a="openSubject" data-id="'+s.id+'"><div class="subj-top"><b>'+esc(s.name)+'</b><span class="muted">'+(s.espb||0)+' ESPB</span></div>'+bar(p)+'<div class="subj-meta"><span>'+(n?dn+'/'+n+' lekcija':'nema lekcija')+'</span><span>'+ex+'</span></div>'+kolLine(s,t)+'</button>';
   }).join('')+'</div>';
   return o;
 };
+function hasPts(k){return k.pts!==''&&k.pts!=null;}
+function kolLine(s,t){
+  const ks=s.kols||[];if(!ks.length)return '';
+  const dn=ks.filter(k=>k.status==='passed').length;
+  const nx=ks.filter(k=>k.status==='pending'&&k.date&&k.date>=t).sort((a,b)=>a.date.localeCompare(b.date))[0];
+  return '<div class="subj-meta"><span>Kolokvijumi: '+dn+'/'+ks.length+' položeno</span><span>'+(nx?'sledeći '+fmtShort(nx.date):'')+'</span></div>';
+}
+function kolRow(k){
+  const t=TODAY();
+  let when='bez datuma';
+  if(k.date){const d=diffDays(k.date,t);when=fmtShort(k.date)+(k.status==='pending'?(d>0?' · za '+d+' d':d===0?' · danas':' · prošao'):'');}
+  const badge=k.status==='passed'?'<span class="badge" style="--accent:var(--green);--accent-t:var(--green-t)">Položen</span>':
+    k.status==='failed'?'<span class="badge late">Nije položen</span>':
+    (k.date&&k.date<t?'<span class="badge today">Upiši ishod</span>':'<span class="badge">Predstoji</span>');
+  const mx=Number(k.max)||0;
+  const pts=hasPts(k)?'<b class="amt">'+fmtN(Number(k.pts))+(mx>0?' / '+fmtN(mx):'')+'</b>':(mx>0?'<span class="muted" style="white-space:nowrap">max '+fmtN(mx)+'</span>':'');
+  return '<button class="tx" data-a="editKol" data-id="'+k.id+'"><div class="tx-main"><b>'+esc(k.title)+'</b><small>'+when+'</small></div>'+badge+pts+'</button>';
+}
+function kolCard(s){
+  const ks=(s.kols||[]).slice().sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));
+  const dn=ks.filter(k=>k.status==='passed').length;
+  const sc=ks.filter(hasPts);
+  const got=sc.reduce((a,k)=>a+Number(k.pts),0),mx=sc.reduce((a,k)=>a+(Number(k.max)||0),0);
+  const allMax=sc.length>0&&sc.every(k=>Number(k.max)>0);
+  return '<div class="card"><h2>Kolokvijumi <button class="btn primary sm" data-a="addKol">+ Dodaj</button></h2>'+
+    (ks.length?'<div class="muted" style="margin:-4px 0 8px">Položeno '+dn+' od '+ks.length+(sc.length?' · ukupno '+fmtN(got)+(allMax?' / '+fmtN(mx):'')+' bodova':'')+'</div>'+ks.map(kolRow).join(''):
+      '<div class="empty-s">Dodaj kolokvijume sa datumima, pa upiši da li si ih položio i sa koliko bodova.</div>')+'</div>';
+}
 function subjectDetail(s){
   const n=s.topics.length,dn=s.topics.filter(x=>x.done).length,p=n?Math.round(dn/n*100):0,t=TODAY();
   const log=S.study.filter(x=>x.sid===s.id),min=log.reduce((a,b)=>a+b.min,0);
@@ -915,7 +950,7 @@ function subjectDetail(s){
   return head(esc(s.name),ex)+'<button class="back" data-a="backSubject">'+ic('back',18)+' Svi predmeti</button>'+
     '<div class="grid2" style="--accent:'+s.color+'"><div><div class="card"><h2>Napredak <small>'+dn+'/'+n+' · '+p+'%</small></h2>'+bar(p).replace('class="bar"','class="bar tall"')+
     '<div class="kv" style="margin-top:14px"><div><b>'+fmtMin(min)+'</b><span>ukupno učenja</span></div><div><b>'+log.length+'</b><span>sesija</span></div><div><b>'+(s.espb||0)+'</b><span>ESPB</span></div></div>'+
-    '<button class="btn sm" data-a="editSubject" data-id="'+s.id+'">Izmeni predmet</button></div></div>'+
+    '<button class="btn sm" data-a="editSubject" data-id="'+s.id+'">Izmeni predmet</button></div>'+kolCard(s)+'</div>'+
     '<div><div class="card"><h2>Lekcije</h2>'+(n?s.topics.map(x=>'<div class="row '+(x.done?'done':'')+'"><button class="check" aria-pressed="'+!!x.done+'" aria-label="Označi: '+esc(x.title)+'" data-a="toggleTopic" data-id="'+x.id+'"></button><div class="row-main"><span class="t">'+esc(x.title)+'</span></div><button class="icon-btn sm" data-a="delTopic" data-id="'+x.id+'" aria-label="Ukloni lekciju">'+ic('x',16)+'</button></div>').join(''):'<div class="empty-s">Dodaj lekcije da pratiš napredak.</div>')+
     '<label class="fl" style="margin-top:14px"><span>Nove lekcije (jedna po liniji)</span><textarea id="nt-topics" rows="3" placeholder="Poglavlje 1\nPoglavlje 2"></textarea></label><button class="btn primary" data-a="addTopics">Dodaj lekcije</button></div></div></div>';
 }
@@ -1217,6 +1252,34 @@ A.toggleTopic=el=>{
   const L0=stats().level;x.done=!x.done;commit();if(x.done)xpToast(L0,'+20 XP');
 };
 A.delTopic=el=>{const s=S.subjects.find(x=>x.id===ui.subject);if(!s)return;s.topics=s.topics.filter(t=>t.id!==el.dataset.id);commit();};
+function kolSheet(s,k){
+  const isNew=!k;
+  const b=k||{title:'',date:'',status:'pending',pts:'',max:0};
+  const fmt=v=>(v===''||v==null||v===0)?'':String(v).replace('.',',');
+  openSheet({title:isNew?'Novi kolokvijum':'Kolokvijum',color:'violet',fields:[
+    {name:'title',label:'Naziv',value:b.title,placeholder:'npr. I kolokvijum'},
+    {name:'date',label:'Datum',type:'date',value:b.date},
+    {name:'status',label:'Ishod',type:'select',value:b.status,options:[['pending','Predstoji'],['passed','Položen'],['failed','Nije položen']]},
+    {name:'pts',label:'Osvojeni bodovi (nije obavezno)',value:fmt(b.pts===0?'0':b.pts),inputmode:'decimal'},
+    {name:'max',label:'Maksimum bodova (nije obavezno)',value:fmt(b.max),inputmode:'decimal'}],
+    onSave:v=>{
+      if(!v.title.trim()){toast('Upiši naziv');return false;}
+      const hp=String(v.pts).trim()!=='';
+      const pts=hp?num(v.pts):'',mx=num(v.max);
+      if(hp&&(pts<0||pts>10000)){toast('Proveri bodove');return false;}
+      if(hp&&mx>0&&pts>mx){toast('Osvojeni bodovi ne mogu biti veći od maksimuma');return false;}
+      if(hp&&v.status==='pending'){toast('Izaberi ishod: položen ili nije položen');return false;}
+      const o={title:v.title.trim(),date:v.date,status:v.status,pts:pts,max:mx>0?mx:0};
+      const L0=stats().level,was=!isNew&&k.status==='passed';
+      s.kols=s.kols||[];
+      if(isNew)s.kols.push(Object.assign({id:uid()},o));else Object.assign(k,o);
+      commit();
+      if(o.status==='passed'&&!was)xpToast(L0,'+30 XP');
+    },
+    onDelete:isNew?null:()=>{s.kols=s.kols.filter(x=>x.id!==k.id);commit();}});
+}
+A.addKol=()=>{const s=S.subjects.find(x=>x.id===ui.subject);if(s)kolSheet(s,null);};
+A.editKol=el=>{const s=S.subjects.find(x=>x.id===ui.subject);if(!s)return;const k=(s.kols||[]).find(x=>x.id===el.dataset.id);if(k)kolSheet(s,k);};
 A.tPreset=el=>{if(T.state==='idle'){T.total=Number(el.dataset.v);render();}};
 A.tStart=()=>{
   if(!T.sid){toast('Prvo dodaj predmet');return;}
@@ -1457,6 +1520,10 @@ function loadDemo(){
     {id:uid(),name:'Statistika',espb:6,exam:addDays(t,24),grade:'',color:'#8B3DFF',topics:tp([['Deskriptivna statistika',true],['Verovatnoća',true],['Raspodele',true],['Testiranje hipoteza',false],['Regresija',false],['ANOVA',false],['Neparametrijski testovi',false],['Ponavljanje zadataka',false]])},
     {id:uid(),name:'Engleski jezik',espb:4,exam:addDays(t,40),grade:'',color:'#E8246F',topics:tp([['Gramatika: vremena',true],['Vokabular: akademski',false],['Pisanje eseja',false],['Slušanje',false]])},
     {id:uid(),name:'Uvod u programiranje',espb:7,exam:addDays(t,-30),grade:'9',color:'#3B5BFF',topics:tp([['Petlje',true],['Funkcije',true],['Nizovi',true],['Rekurzija',true]])}];
+  const kl=(title,date,status,pts,max)=>({id:uid(),title:title,date:date,status:status,pts:pts,max:max});
+  s.subjects[0].kols=[kl('I kolokvijum',addDays(t,-14),'passed',24,30),kl('II kolokvijum',addDays(t,9),'pending','',30)];
+  s.subjects[1].kols=[kl('Test iz gramatike',addDays(t,-5),'failed',11,30),kl('Esej',addDays(t,16),'pending','',20)];
+  s.subjects[2].kols=[kl('Kolokvijum 1',addDays(t,-70),'passed',41,50),kl('Kolokvijum 2',addDays(t,-45),'passed',38,50)];
   const sid=s.subjects[0].id;
   for(let i=1;i<=5;i++)s.study.push({id:uid(),sid:sid,date:addDays(t,-i),min:i%2?50:25,at:Date.now()-i*86400000});
   s.plans=[
